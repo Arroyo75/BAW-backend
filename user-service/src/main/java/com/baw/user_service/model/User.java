@@ -1,7 +1,12 @@
 package com.baw.user_service.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -20,18 +25,28 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Size(min = 3, max = 50)
+    @NotBlank
     @Column(unique = true, nullable = false, length = 50)
     private String username;
 
+    @NotBlank
+    @Size(min = 8)
     @Column(nullable = false)
     private String password;
 
+    @NotBlank
+    @Email
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Size(min = 3, max = 30)
+    @NotBlank
     @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
 
+    @Size(min = 3, max = 30)
+    @NotBlank
     @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 
@@ -46,9 +61,11 @@ public class User {
     @Builder.Default
     private Boolean active = true;
 
+    @CreationTimestamp
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
