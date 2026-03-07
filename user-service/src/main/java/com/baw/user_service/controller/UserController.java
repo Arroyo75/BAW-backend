@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class UserController {
     private final IUserService userService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
         UserDTO user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
@@ -41,7 +42,7 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
             @RequestBody UpdateUserRequest request,
-            @PathVariable Long id) {
+            @PathVariable UUID id) {
 
         UserDTO user = userService.updateUser(request, id);
         return ResponseEntity.ok(user);
@@ -49,7 +50,7 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteUser(
-            @PathVariable Long id) {
+            @PathVariable UUID id) {
 
         userService.deleteUser(id);
         return ResponseEntity.ok(Map.of("message", "User deactivated successfully"));

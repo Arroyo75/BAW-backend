@@ -12,6 +12,7 @@ import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -22,7 +23,7 @@ public class UserService implements IUserService{
     private final UserRepository userRepository;
 
     @Override
-    public UserDTO getUserById(Long id) {
+    public UserDTO getUserById(UUID id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() ->  new RuntimeException("User not found"));
         return convertToDto(user);
@@ -63,7 +64,7 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public UserDTO updateUser(UpdateUserRequest request, Long id) {
+    public UserDTO updateUser(UpdateUserRequest request, UUID id) {
 
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -94,7 +95,7 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public void deleteUser(Long id) {
+    public void deleteUser(UUID id) {
         if(!userRepository.existsById(id)) {
             throw new RuntimeException("User not found!");
         }

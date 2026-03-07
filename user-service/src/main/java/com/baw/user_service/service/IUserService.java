@@ -5,17 +5,18 @@ import com.baw.user_service.request.CreateUserRequest;
 import com.baw.user_service.request.UpdateUserRequest;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface IUserService {
 
-    UserDTO getUserById(Long id);
+    UserDTO getUserById(UUID id);
 
     List<UserDTO> getAllUsers();
 
     UserDTO createUser(CreateUserRequest request);
-    UserDTO updateUser(UpdateUserRequest request, Long id);
+    UserDTO updateUser(UpdateUserRequest request, UUID id);
 
-    void deleteUser(Long id);
+    void deleteUser(UUID id);
 
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
