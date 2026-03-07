@@ -1,6 +1,9 @@
 spring:
   application:
     name: user-service
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -32,3 +35,16 @@ management:
   endpoint:
     health:
       show-details: always
+
+logging:
+  level:
+    com.baw.user_service: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+
+jwt:
+  private-key: ${JWT_PRIVATE_KEY}
+  public-key: ${JWT_PUBLIC_KEY}
+
