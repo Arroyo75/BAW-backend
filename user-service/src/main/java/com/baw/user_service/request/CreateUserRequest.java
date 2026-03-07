@@ -10,15 +10,16 @@ import lombok.Data;
 public class CreateUserRequest {
 
     @NotBlank
-    @Size(min = 3, max = 30)
+    @Size(min =3, max = 50)
     private String username;
 
     @NotBlank
-    @Size(min = 8)
+    @Size(min = 8, max = 72)
     private String password;
 
     @NotBlank
     @Email
+    @Size(max = 100)
     private String email;
 
     @NotBlank

@@ -3,18 +3,20 @@ package com.baw.user_service.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Builder
 @Data
 public class UserDTO {
-    private Long id;
+    private UUID id;
     private String username;
     private String email;
     private String firstName;
     private String lastName;
     private String phoneNumber;
     private Boolean active;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

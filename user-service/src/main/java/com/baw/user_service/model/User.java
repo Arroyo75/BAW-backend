@@ -8,7 +8,9 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -21,22 +23,17 @@ import java.time.LocalDateTime;
         @Index(name = "email_id", columnList = "email")
 })
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Size(min = 3, max = 50)
-    @NotBlank
-    @Column(unique = true, nullable = false, length = 50)
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @NotBlank
-    @Size(min = 8)
     @Column(nullable = false)
-    private String password;
+    private String passwordHash;
 
-    @NotBlank
-    @Email
     @Column(unique = true, nullable = false)
     private String email;
 
@@ -61,11 +58,19 @@ public class User {
     @Builder.Default
     private Boolean active = true;
 
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Column(name = "updated_at",nullable = false)
+    private Instant updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = updatedAt = Instant.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = Instant.now();
+    }
 }

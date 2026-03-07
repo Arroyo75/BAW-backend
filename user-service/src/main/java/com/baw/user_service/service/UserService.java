@@ -48,7 +48,7 @@ public class UserService implements IUserService{
 
         User user = User.builder()
                 .username(request.getUsername())
-                .password(request.getPassword())
+                .passwordHash(request.getPassword())
                 .email(request.getEmail())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())

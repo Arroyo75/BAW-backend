@@ -8,6 +8,7 @@ import lombok.Data;
 public class UpdateUserRequest {
 
     @Email
+    @Size(max = 100)
     private String email;
 
     @Size(max = 30)
