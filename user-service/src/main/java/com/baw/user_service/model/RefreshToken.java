@@ -19,7 +19,7 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 2048)
     private String token;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,5 +33,6 @@ public class RefreshToken {
     @Builder.Default
     private boolean revoked = false;
 
+    @Column(length = 36)
     private String family; //for token chain
 }

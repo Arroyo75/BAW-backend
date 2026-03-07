@@ -1,6 +1,7 @@
 package com.baw.user_service.service;
 
 import com.baw.user_service.dto.UserDTO;
+import com.baw.user_service.exception.DataIntegrityViolationException;
 import com.baw.user_service.model.Role;
 import com.baw.user_service.model.User;
 import com.baw.user_service.repository.UserRepository;
@@ -9,6 +10,7 @@ import com.baw.user_service.request.UpdateUserRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class UserService implements IUserService{
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDTO getUserById(UUID id) {
@@ -49,7 +52,7 @@ public class UserService implements IUserService{
 
         User user = User.builder()
                 .username(request.getUsername())
-                .passwordHash(request.getPassword())
+                .passwordHash(passwordEncoder.encode(request.getPassword()))
                 .email(request.getEmail())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
@@ -69,11 +72,11 @@ public class UserService implements IUserService{
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
-            if (userRepository.existsByEmail(request.getEmail())) {
-                throw new RuntimeException("Email already exists: " + request.getEmail());
+        if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
+            if (userRepository.existsByUsername(request.getUsername())) {
+                throw new RuntimeException("Username taken");
             }
-            user.setEmail(request.getEmail());
+            user.setEmail(request.getUsername());
         }
 
         if (request.getFirstName() != null) {
@@ -91,7 +94,7 @@ public class UserService implements IUserService{
         User updatedUser = userRepository.save(user);
         log.info("User updated successfully");
 
-        return convertToDto(user);
+        return convertToDto(updatedUser);
     }
 
     @Override

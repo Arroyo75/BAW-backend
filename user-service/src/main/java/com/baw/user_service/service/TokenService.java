@@ -5,12 +5,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -18,6 +20,7 @@ public class TokenService implements ITokenService {
 
     private final RSAPrivateKey privateKey;
     private final RSAPublicKey publicKey;
+    private final RedisTemplate<String, String> redis;
 
     @Value("${jwt.expiration}")
     private long accessTokenExpiration;
@@ -57,5 +60,18 @@ public class TokenService implements ITokenService {
                 .parseSignedClaims(token)
                 .getPayload();
         //some better exception handling needed here
+    }
+
+    public boolean isBlacklisted(String jti) {
+        return Boolean.TRUE.equals(redis.hasKey("blacklist:" + jti));
+    }
+
+    public void blacklist(String jti, long ttlMs) {
+        redis.opsForValue().set(
+                "blacklist:" + jti,
+                "revoked",
+                ttlMs,
+                TimeUnit.MILLISECONDS
+        );
     }
 }
