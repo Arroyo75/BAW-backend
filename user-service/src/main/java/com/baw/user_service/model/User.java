@@ -1,15 +1,13 @@
 package com.baw.user_service.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Getter
@@ -50,9 +48,12 @@ public class User {
     @Column(name = "phone_number", length = 12)
     private String phoneNumber;
 
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Role role;
+    @Column(name = "role")
+    @Builder.Default
+    private Set<Role> roles = new HashSet<>(Set.of(Role.USER));
 
     @Column(nullable = false)
     @Builder.Default

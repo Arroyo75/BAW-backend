@@ -1,6 +1,7 @@
 package com.baw.user_service.service;
 
 import com.baw.user_service.dto.UserDTO;
+import com.baw.user_service.model.Role;
 import com.baw.user_service.request.CreateUserRequest;
 import com.baw.user_service.request.UpdateUserRequest;
 
@@ -14,9 +15,12 @@ public interface IUserService {
     List<UserDTO> getAllUsers();
 
     UserDTO createUser(CreateUserRequest request);
+
     UserDTO updateUser(UpdateUserRequest request, UUID id);
+    UserDTO assignRole(UUID id, Role role);
 
     void deleteUser(UUID id);
+
 
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);

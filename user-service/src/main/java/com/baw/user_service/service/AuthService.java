@@ -48,7 +48,6 @@ public class AuthService implements IAuthService {
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .phoneNumber(request.getPhoneNumber())
-                .role(Role.VIEWER)
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -73,7 +72,7 @@ public class AuthService implements IAuthService {
                 .tokenType("Bearer")
                 .expiresIn(refreshTokenExpiration)
                 .userId(user.getId())
-                .role(user.getRole())
+                .roles(user.getRoles())
                 .build();
     }
 
@@ -106,7 +105,7 @@ public class AuthService implements IAuthService {
                 .tokenType("Bearer")
                 .expiresIn(refreshTokenExpiration)
                 .userId(user.getId())
-                .role(user.getRole())
+                .roles(user.getRoles())
                 .build();
     }
 

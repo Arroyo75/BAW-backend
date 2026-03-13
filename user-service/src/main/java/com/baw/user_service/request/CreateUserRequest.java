@@ -1,6 +1,5 @@
 package com.baw.user_service.request;
 
-import com.baw.user_service.model.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,8 +28,6 @@ public class CreateUserRequest {
     @NotBlank
     @Size(max = 30)
     private String lastName;
-
-    private Role role;
 
     private String phoneNumber;
 }

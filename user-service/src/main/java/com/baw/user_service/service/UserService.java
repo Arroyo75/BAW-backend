@@ -57,7 +57,6 @@ public class UserService implements IUserService{
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .phoneNumber(request.getPhoneNumber())
-                .role(Role.VIEWER)
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -94,6 +93,16 @@ public class UserService implements IUserService{
         User updatedUser = userRepository.save(user);
         log.info("User updated successfully");
 
+        return convertToDto(updatedUser);
+    }
+
+    @Override
+    public UserDTO assignRole(UUID id, Role role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.getRoles().add(role);
+        User updatedUser = userRepository.save(user);
         return convertToDto(updatedUser);
     }
 

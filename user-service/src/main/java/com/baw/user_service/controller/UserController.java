@@ -1,7 +1,9 @@
 package com.baw.user_service.controller;
 
 import com.baw.user_service.dto.UserDTO;
+import com.baw.user_service.model.User;
 import com.baw.user_service.request.CreateUserRequest;
+import com.baw.user_service.request.RoleRequest;
 import com.baw.user_service.request.UpdateUserRequest;
 import com.baw.user_service.service.IUserService;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +48,12 @@ public class UserController {
             @PathVariable UUID id) {
 
         UserDTO user = userService.updateUser(request, id);
+        return ResponseEntity.ok(user);
+    }
+
+    @PutMapping("/{id}/roles")
+    public ResponseEntity<UserDTO> assignRoles(@PathVariable UUID id, @RequestBody RoleRequest request) {
+        UserDTO user = userService.assignRole(id, request.getRole());
         return ResponseEntity.ok(user);
     }
 

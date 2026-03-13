@@ -4,6 +4,7 @@ import com.baw.user_service.model.Role;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -14,5 +15,5 @@ public class AuthDTO {
     String tokenType;
     long expiresIn;
     UUID userId;
-    Role role;
+    Set<Role> roles;
 }
