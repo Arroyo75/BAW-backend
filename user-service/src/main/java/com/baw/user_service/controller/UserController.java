@@ -23,18 +23,21 @@ public class UserController {
 
     private final IUserService userService;
 
+    @PreAuthorize("#id.toString() == authentication.name || hasRole('ADMIN')")
     @GetMapping("/{id}")
     public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
         UserDTO user = userService.getUserById(id);
         return ResponseEntity.ok(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<List<UserDTO>> getAllUsers() {
         List<UserDTO> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<UserDTO> createUser(
             @RequestBody CreateUserRequest request) {
@@ -43,7 +46,7 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("#id.toString() == authentication.name || hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
             @RequestBody UpdateUserRequest request,
@@ -53,17 +56,24 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
+    //@PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}/roles")
     public ResponseEntity<UserDTO> assignRoles(@PathVariable UUID id, @RequestBody RoleRequest request) {
         UserDTO user = userService.assignRole(id, request.getRole());
         return ResponseEntity.ok(user);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, String>> deleteUser(
-            @PathVariable UUID id) {
-
-        userService.deleteUser(id);
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable UUID id) {
+        userService.deactivateUser(id);
         return ResponseEntity.ok(Map.of("message", "User deactivated successfully"));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}/purge")
+    public ResponseEntity<Map<String, String>> purgeUser(@PathVariable UUID id) {
+        userService.purgeUser(id);
+        return ResponseEntity.ok(Map.of("message", "User purged successfully"));
     }
 }

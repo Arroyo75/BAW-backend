@@ -107,12 +107,21 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public void deleteUser(UUID id) {
+    public void deactivateUser(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setActive(false);
+        userRepository.save(user);
+        log.info("User successfully deactivated.");
+    }
+
+    @Override
+    public void purgeUser(UUID id) {
         if(!userRepository.existsById(id)) {
             throw new RuntimeException("User not found!");
         }
         userRepository.deleteById(id);
-        log.info("User successfully deleted.");
+        log.info("User successfully purged");
     }
 
     @Override

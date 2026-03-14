@@ -19,8 +19,8 @@ public interface IUserService {
     UserDTO updateUser(UpdateUserRequest request, UUID id);
     UserDTO assignRole(UUID id, Role role);
 
-    void deleteUser(UUID id);
-
+    void deactivateUser(UUID id);
+    void purgeUser(UUID id);
 
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
