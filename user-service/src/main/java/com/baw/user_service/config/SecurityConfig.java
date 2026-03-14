@@ -1,9 +1,5 @@
 package com.baw.user_service.config;
 
-import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 import java.security.interfaces.RSAPublicKey;
@@ -27,9 +25,11 @@ import java.security.interfaces.RSAPublicKey;
 public class SecurityConfig {
 
     private final RedisTemplate<String, String> redisTemplate;
+    private final RSAPublicKey publicKey;
 
-    public SecurityConfig(RedisTemplate<String, String> redisTemplate) {
+    public SecurityConfig(RedisTemplate<String, String> redisTemplate, RSAPublicKey publicKey) {
         this.redisTemplate = redisTemplate;
+        this.publicKey = publicKey;
     }
 
     @Bean
@@ -45,13 +45,16 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
-                        .jwt(Customizer.withDefaults())
+                        .jwt(jwt -> jwt
+                                .decoder(jwtDecoder())
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        )
                 )
                 .build();
     }
 
     @Bean
-    public JwtDecoder jwtDecoder(RSAPublicKey publicKey) {
+    public JwtDecoder jwtDecoder() {
 
         NimbusJwtDecoder decoder = NimbusJwtDecoder
                 .withPublicKey(publicKey)
@@ -72,5 +75,16 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
+    }
+
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthoritiesClaimName("X-User-Roles");
+        authoritiesConverter.setAuthorityPrefix("ROLE_");
+
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+        return converter;
     }
 }
