@@ -22,6 +22,4 @@ public interface IUserService {
     void deactivateUser(UUID id);
     void purgeUser(UUID id);
 
-    boolean existsByUsername(String username);
-    boolean existsByEmail(String email);
 }

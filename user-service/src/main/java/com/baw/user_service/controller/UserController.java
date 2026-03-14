@@ -6,6 +6,7 @@ import com.baw.user_service.request.CreateUserRequest;
 import com.baw.user_service.request.RoleRequest;
 import com.baw.user_service.request.UpdateUserRequest;
 import com.baw.user_service.service.IUserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +41,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<UserDTO> createUser(
-            @RequestBody CreateUserRequest request) {
+            @Valid @RequestBody CreateUserRequest request) {
 
         UserDTO user = userService.createUser(request);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
@@ -49,7 +50,7 @@ public class UserController {
     @PreAuthorize("#id.toString() == authentication.name || hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<UserDTO> updateUser(
-            @RequestBody UpdateUserRequest request,
+            @Valid @RequestBody UpdateUserRequest request,
             @PathVariable UUID id) {
 
         UserDTO user = userService.updateUser(request, id);

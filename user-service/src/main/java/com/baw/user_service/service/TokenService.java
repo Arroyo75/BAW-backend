@@ -63,7 +63,6 @@ public class TokenService implements ITokenService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        //some better exception handling needed here
     }
 
     public boolean isBlacklisted(String jti) {

@@ -1,7 +1,9 @@
 package com.baw.user_service.service;
 
 import com.baw.user_service.dto.UserDTO;
+import com.baw.user_service.exception.AlreadyExistsException;
 import com.baw.user_service.exception.DataIntegrityViolationException;
+import com.baw.user_service.exception.ResourceNotFoundException;
 import com.baw.user_service.model.Role;
 import com.baw.user_service.model.User;
 import com.baw.user_service.repository.UserRepository;
@@ -28,7 +30,7 @@ public class UserService implements IUserService{
     @Override
     public UserDTO getUserById(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() ->  new RuntimeException("User not found"));
+                .orElseThrow(() ->  new ResourceNotFoundException("User not found"));
         return convertToDto(user);
     }
 
@@ -43,11 +45,11 @@ public class UserService implements IUserService{
     public UserDTO createUser(CreateUserRequest request) {
 
         if(userRepository.existsByUsername(request.getUsername())) {
-            throw new RuntimeException("Username already exists: " + request.getUsername());
+            throw new AlreadyExistsException("Username already exists: " + request.getUsername());
         }
 
         if(userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already exists: " + request.getEmail());
+            throw new AlreadyExistsException("Email already exists: " + request.getEmail());
         }
 
         User user = User.builder()
@@ -69,11 +71,11 @@ public class UserService implements IUserService{
     public UserDTO updateUser(UpdateUserRequest request, UUID id) {
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         if (request.getUsername() != null && !request.getUsername().equals(user.getUsername())) {
             if (userRepository.existsByUsername(request.getUsername())) {
-                throw new RuntimeException("Username taken");
+                throw new AlreadyExistsException("Username taken");
             }
             user.setEmail(request.getUsername());
         }
@@ -99,7 +101,7 @@ public class UserService implements IUserService{
     @Override
     public UserDTO assignRole(UUID id, Role role) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         user.getRoles().add(role);
         User updatedUser = userRepository.save(user);
@@ -109,7 +111,7 @@ public class UserService implements IUserService{
     @Override
     public void deactivateUser(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setActive(false);
         userRepository.save(user);
         log.info("User successfully deactivated.");
@@ -118,20 +120,10 @@ public class UserService implements IUserService{
     @Override
     public void purgeUser(UUID id) {
         if(!userRepository.existsById(id)) {
-            throw new RuntimeException("User not found!");
+            throw new ResourceNotFoundException("User not found!");
         }
         userRepository.deleteById(id);
         log.info("User successfully purged");
-    }
-
-    @Override
-    public boolean existsByUsername(String username) {
-        return false;
-    }
-
-    @Override
-    public boolean existsByEmail(String email) {
-        return false;
     }
 
     private UserDTO convertToDto(User user) {
