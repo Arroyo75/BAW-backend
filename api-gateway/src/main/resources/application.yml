@@ -34,14 +34,14 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,gateway
+        include: health
   endpoint:
     health:
-      show-details: always
+      show-details: never
     gateway:
       enabled: true
 
 logging:
   level:
-    org.springframework.cloud.gateway: DEBUG
-    reactor.netty: DEBUG
+    root: WARN
+    com.yourpackage: INFO

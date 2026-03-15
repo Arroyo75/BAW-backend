@@ -1,5 +1,6 @@
 package com.baw.api_gateway.filter;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -12,6 +13,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.List;
 
+@Slf4j
 @Component
 public class JwtAuthFilter implements GlobalFilter, Ordered {
 
@@ -40,6 +42,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
         if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.warn("Rejected request - missing or malformed Authorization header: path={}", path);
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
@@ -49,9 +52,11 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         return jwtDecoder.decode(token)
                 .flatMap(jwt -> {
                   String jti = jwt.getId();
+                  String subject = jwt.getSubject();
                   return redisTemplate.hasKey("blacklist:" + jti)
                           .flatMap(blacklisted -> {
                               if(blacklisted) {
+                                  log.warn("Rejected request - blacklisted token: userId={}, jti={}, path={}", subject, jti, path);
                                   exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                                   return exchange.getResponse().setComplete();
                               }
@@ -59,6 +64,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                           });
                 })
                 .onErrorResume(e -> {
+                    log.warn("Rejected request - invalid token: path={}, reason={}", path, e.getMessage());
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                     return exchange.getResponse().setComplete();
                 });

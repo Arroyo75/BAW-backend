@@ -14,9 +14,15 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-RUN apk add --no-cache curl
+RUN apk add --no-cache curl && \
+    addgroup --system appgroup && \
+    adduser --system --ingroup appgroup --no-create-home appuser
 
 COPY --from=build /app/target/*.jar app.jar
+
+RUN chown appuser:appgroup app.jar
+
+USER appuser
 
 EXPOSE 8081
 

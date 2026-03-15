@@ -14,7 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./init-db.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
-      - baw-network
+      - backend-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -27,10 +27,8 @@ services:
     container_name: user-service
     env_file:
       - .env
-    ports:
-      - "8081:8081"
     networks:
-      - baw-network
+      - backend-network
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/user_service_db
       - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
@@ -48,6 +46,13 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
 
   api-gateway:
     build:
@@ -59,7 +64,8 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - baw-network
+      - frontend-network
+      - backend-network
     environment:
       - SPRING_DATA_REDIS_HOST=redis
       - SPRING_DATA_REDIS_PORT=6379
@@ -74,6 +80,13 @@ services:
       timeout: 10s
       retries: 5
       start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
 
   redis:
     image: redis:7-alpine
@@ -83,7 +96,7 @@ services:
     volumes:
       - redis_data:/data
     networks:
-      - baw-network
+      - backend-network
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
@@ -91,7 +104,9 @@ services:
       retries: 5
 
 networks:
-  baw-network:
+  backend-network:
+    driver: bridge
+  frontend-network:
     driver: bridge
 
 volumes:

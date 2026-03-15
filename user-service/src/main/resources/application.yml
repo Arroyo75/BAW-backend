@@ -38,18 +38,17 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,metrics
+        include: health
   endpoint:
     health:
-      show-details: always
+      show-details: never
 
 logging:
   level:
-    com.baw.user_service: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    root: WARN
+    com.baw: INFO
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
 
 jwt:
   private-key: ${JWT_PRIVATE_KEY}

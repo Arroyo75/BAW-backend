@@ -14,6 +14,7 @@ import com.baw.user_service.request.LoginRequest;
 import io.jsonwebtoken.Claims;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -23,6 +24,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @RequiredArgsConstructor
+@Slf4j
 @Service
 @Transactional
 public class AuthService implements IAuthService {
@@ -38,6 +40,7 @@ public class AuthService implements IAuthService {
     @Override
     public UserDTO register(CreateUserRequest request) {
         if(userRepository.existsByEmail(request.getEmail())) {
+            log.warn("Registration failed - email already exists: {}", request.getEmail());
             throw new DataIntegrityViolationException("Registration failed");
         }
 
@@ -51,20 +54,26 @@ public class AuthService implements IAuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
+        log.info("User registered: userID={}", savedUser.getId());
         return convertToDto(savedUser);
     }
 
     @Override
     public AuthDTO login(LoginRequest request) {
         User user = userRepository.findByEmailAndActiveTrue(request.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Invalid credentials."));
-
+                .orElseThrow(() -> {
+                    log.warn("Login failed - user not found or inactive: email={}", request.getEmail());
+                    return new BadCredentialsException("Invalid credentials.");
+                });
         if(!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            log.warn("Login failed - bad password: userId={}", user.getId());
             throw new BadCredentialsException("Invalid credentials.");
         }
 
         String accessToken = tokenService.generateAccessToken(user);
         String refreshToken = createRefreshToken(user);
+
+        log.info("Login successful: userId={}", user.getId());
 
         return AuthDTO.builder()
                 .accessToken(accessToken)
@@ -79,16 +88,22 @@ public class AuthService implements IAuthService {
     @Override
     public AuthDTO refresh(String refreshTokenValue) {
         RefreshToken stored = tokenRepository.findByToken(refreshTokenValue)
-                .orElseThrow(() -> new InvalidTokenException("Invalid refresh token"));
+                .orElseThrow(() -> {
+                    log.warn("Refresh failed - token not found");
+                    return new InvalidTokenException("Invalid refresh token");
+                });
 
         //token already used or revoked
         if (stored.isRevoked()) {
             //revoke the entire family — potential theft
+            log.warn("Token theft detected - revoking family: userId={}, family={}",
+                    stored.getUser().getId(), stored.getFamily());
             tokenRepository.revokeFamily(stored.getFamily());
             throw new InvalidTokenException("Refresh token reuse detected");
         }
 
         if (stored.getExpiresAt().isBefore(Instant.now())) {
+            log.warn("Refresh failed - token expired: userId={}", stored.getUser().getId());
             throw new InvalidTokenException("Refresh token expired");
         }
 
@@ -98,6 +113,8 @@ public class AuthService implements IAuthService {
         User user = stored.getUser();
         String newAccessToken = tokenService.generateAccessToken(user);
         String newRefreshToken = createRefreshToken(user, stored.getFamily()); // same family
+
+        log.info("Token refreshed: userId={}, family={}", user.getId(), stored.getFamily());
 
         return AuthDTO.builder()
                 .accessToken(newAccessToken)
@@ -117,6 +134,7 @@ public class AuthService implements IAuthService {
 
         tokenRepository.findByToken(refreshTokenValue)
                 .ifPresent(rt -> {
+                    log.info("Logout: userId={}, jti={}", rt.getUser().getId(), claims.getId());
                     rt.setRevoked(true);
                     tokenRepository.save(rt);
                 });
