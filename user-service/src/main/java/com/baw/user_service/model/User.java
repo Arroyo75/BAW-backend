@@ -35,13 +35,9 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @Size(min = 3, max = 30)
-    @NotBlank
     @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
 
-    @Size(min = 3, max = 30)
-    @NotBlank
     @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 

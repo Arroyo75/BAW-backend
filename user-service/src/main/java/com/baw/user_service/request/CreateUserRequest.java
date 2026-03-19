@@ -22,11 +22,11 @@ public class CreateUserRequest {
     private String email;
 
     @NotBlank
-    @Size(max = 30)
+    @Size(min = 3, max = 30)
     private String firstName;
 
     @NotBlank
-    @Size(max = 30)
+    @Size(min = 3, max = 30)
     private String lastName;
 
     private String phoneNumber;

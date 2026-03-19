@@ -16,6 +16,10 @@ spring:
                     redis-rate-limiter.replenishRate: 10
                     redis-rate-limiter.burstCapacity: 20
                     key-resolver: "#{@ipKeyResolver}"
+            - id: dog-service
+              uri: http://dog-service:8082
+              predicates:
+                - Path=/api/dogs/**
   data:
     redis:
       host: redis
