@@ -4,6 +4,8 @@ import com.baw.user_service.dto.UserDTO;
 import com.baw.user_service.model.Role;
 import com.baw.user_service.request.CreateUserRequest;
 import com.baw.user_service.request.UpdateUserRequest;
+import com.baw.user_service.request.UserFilterRequest;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +14,7 @@ public interface IUserService {
 
     UserDTO getUserById(UUID id);
 
-    List<UserDTO> getAllUsers();
+    Page<UserDTO> getUsers(UserFilterRequest filter);
 
     UserDTO createUser(CreateUserRequest request);
 

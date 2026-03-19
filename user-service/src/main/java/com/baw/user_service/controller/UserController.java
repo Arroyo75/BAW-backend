@@ -5,9 +5,11 @@ import com.baw.user_service.model.User;
 import com.baw.user_service.request.CreateUserRequest;
 import com.baw.user_service.request.RoleRequest;
 import com.baw.user_service.request.UpdateUserRequest;
+import com.baw.user_service.request.UserFilterRequest;
 import com.baw.user_service.service.IUserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,8 +35,20 @@ public class UserController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
-        List<UserDTO> users = userService.getAllUsers();
+    public ResponseEntity<Page<UserDTO>> getUsers(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean hasDogs,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+
+        UserFilterRequest filter = new UserFilterRequest();
+        filter.setSearch(search);
+        filter.setHasDogs(hasDogs);
+        filter.setPage(page);
+        filter.setSize(size);
+
+        Page<UserDTO> users = userService.getUsers(filter);
         return ResponseEntity.ok(users);
     }
 

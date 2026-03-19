@@ -2,16 +2,21 @@ package com.baw.user_service.service;
 
 import com.baw.user_service.dto.UserDTO;
 import com.baw.user_service.exception.AlreadyExistsException;
-import com.baw.user_service.exception.DataIntegrityViolationException;
 import com.baw.user_service.exception.ResourceNotFoundException;
 import com.baw.user_service.model.Role;
 import com.baw.user_service.model.User;
 import com.baw.user_service.repository.UserRepository;
 import com.baw.user_service.request.CreateUserRequest;
 import com.baw.user_service.request.UpdateUserRequest;
+import com.baw.user_service.request.UserFilterRequest;
+import com.baw.user_service.util.UserSpecification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,10 +40,14 @@ public class UserService implements IUserService{
     }
 
     @Override
-    public List<UserDTO> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(this::convertToDto)
-                .collect(Collectors.toList());
+    public Page<UserDTO> getUsers(UserFilterRequest filter) {
+        Specification<User> spec = Specification
+                .where(UserSpecification.matchesSearch(filter.getSearch()))
+                .and(UserSpecification.isHasDogs(filter.getHasDogs()));
+
+        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), Sort.by("createdAt").descending());
+        return userRepository.findAll(spec, pageable)
+                .map(this::convertToDto);
     }
 
     @Override
@@ -135,6 +144,7 @@ public class UserService implements IUserService{
                 .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .active(user.getActive())
+                .hasDogs(user.getHasDogs())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
