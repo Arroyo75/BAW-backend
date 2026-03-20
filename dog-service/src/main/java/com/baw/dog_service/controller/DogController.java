@@ -1,12 +1,16 @@
 package com.baw.dog_service.controller;
 
 import com.baw.dog_service.dto.DogDTO;
+import com.baw.dog_service.repository.DogRepository;
 import com.baw.dog_service.request.CreateDogRequest;
+import com.baw.dog_service.request.DogFilterRequest;
 import com.baw.dog_service.service.IDogService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -25,9 +29,38 @@ public class DogController {
         return ResponseEntity.ok(dog);
     }
 
+    @GetMapping()
+    public ResponseEntity<Page<DogDTO>> getDogs(
+            @RequestParam(required = false) String search,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        DogFilterRequest filter = new DogFilterRequest();
+        filter.setSearch(search);
+        filter.setPage(page);
+        filter.setSize(size);
+
+        Page<DogDTO> dogs = dogService.getDogs(filter);
+        return ResponseEntity.ok(dogs);
+    }
+
+    @GetMapping("/{ownerId}/owner")
+    public ResponseEntity<Page<DogDTO>> getDogsByOwnerId(
+            @PathVariable UUID ownerId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<DogDTO> dogs = dogService.getDogsByOwnerId(ownerId, page, size);
+        return ResponseEntity.ok(dogs);
+    }
+
     @PostMapping
-    public ResponseEntity<DogDTO> createDog(@Valid @RequestBody CreateDogRequest request) {
-        DogDTO dog = dogService.createDog(request);
+    public ResponseEntity<DogDTO> createDog(
+            @Valid @RequestBody CreateDogRequest request,
+            Authentication authentication
+    ) {
+        UUID ownerId = UUID.fromString(authentication.getName());
+        DogDTO dog = dogService.createDog(request, ownerId);
         return new ResponseEntity<>(dog, HttpStatus.CREATED);
     }
 

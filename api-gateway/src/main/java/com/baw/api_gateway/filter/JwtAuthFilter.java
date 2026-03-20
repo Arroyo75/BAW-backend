@@ -5,6 +5,7 @@ import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -25,6 +27,10 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
         this.jwtDecoder = jwtDecoder;
     }
 
+    private static final List<Map.Entry<HttpMethod, String>> PUBLIC_ROUTES = List.of(
+            Map.entry(HttpMethod.GET, "/api/dogs")
+    );
+
     private static final List<String> PUBLIC_PATHS = List.of(
             "/actuator/health",
             "/api/auth/register",
@@ -35,8 +41,13 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         String path = exchange.getRequest().getPath().toString();
+        HttpMethod method = exchange.getRequest().getMethod();
 
-        if(PUBLIC_PATHS.stream().anyMatch(path::startsWith)) {
+        boolean isPublic = PUBLIC_PATHS.stream().anyMatch(path::startsWith)
+                || PUBLIC_ROUTES.stream().anyMatch(route ->
+                route.getKey().equals(method) && path.startsWith(route.getValue()));
+
+        if (isPublic) {
             return chain.filter(exchange);
         }
 

@@ -12,8 +12,9 @@ public interface IDogService {
     DogDTO getDogById(UUID id);
 
     Page<DogDTO> getDogs(DogFilterRequest filter);
+    Page<DogDTO> getDogsByOwnerId(UUID ownerId, int page, int size);
 
-    DogDTO createDog(CreateDogRequest request);
+    DogDTO createDog(CreateDogRequest request, UUID ownerId);
 
     DogDTO updateDog(CreateDogRequest request, UUID id);
 

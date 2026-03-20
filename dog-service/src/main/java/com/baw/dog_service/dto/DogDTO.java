@@ -12,7 +12,7 @@ import java.util.UUID;
 @Data
 public class DogDTO {
     private UUID id;
-    //private UUID ownerId;
+    private UUID ownerId;
     private String nickname;
     private String breed;
     private Integer age;

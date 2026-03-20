@@ -18,8 +18,8 @@ public class Dog {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    //@Column(name = "owner_id", nullable = false)
-    //private UUID ownerId;
+    @Column(name = "owner_id", nullable = false)
+    private UUID ownerId;
 
     @Column(nullable = false)
     private String nickname;
