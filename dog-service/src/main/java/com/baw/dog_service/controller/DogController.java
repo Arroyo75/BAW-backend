@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,12 +65,14 @@ public class DogController {
         return new ResponseEntity<>(dog, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("@dogSecurity.isOwner(#id, authentication.name) || hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<DogDTO> updateDog(@Valid @RequestBody CreateDogRequest request, @PathVariable UUID id) {
         DogDTO dog = dogService.updateDog(request, id);
         return ResponseEntity.ok(dog);
     }
 
+    @PreAuthorize("@dogSecurity.isOwner(#id, authentication.name) || hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteDog(@PathVariable UUID id) {
         dogService.deleteDog(id);

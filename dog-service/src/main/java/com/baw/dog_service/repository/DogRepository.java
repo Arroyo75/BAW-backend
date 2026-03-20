@@ -11,4 +11,5 @@ import java.util.UUID;
 
 public interface DogRepository extends JpaRepository<Dog, UUID>, JpaSpecificationExecutor<Dog> {
     Page<Dog> findByOwnerId(UUID ownerId, Pageable pageable);
+    boolean existsByIdAndOwnerId(UUID id, UUID ownerId);
 }
