@@ -6,6 +6,8 @@ import com.baw.user_service.request.CreateUserRequest;
 import com.baw.user_service.request.LoginRequest;
 import com.baw.user_service.request.RefreshRequest;
 import com.baw.user_service.service.IAuthService;
+import com.baw.user_service.util.CookieUtils;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -26,23 +28,40 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthDTO> login(@Valid @RequestBody LoginRequest request) {
-        AuthDTO response = authService.login(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<AuthDTO> login(
+            @Valid @RequestBody LoginRequest request,
+            HttpServletResponse response) {
+        AuthDTO result = authService.login(request);
+        CookieUtils.addRefreshTokenCookie(response, result.getRefreshToken());
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthDTO> refresh(@Valid @RequestBody RefreshRequest request) {
-        AuthDTO response = authService.refresh(request.getRefreshToken());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<AuthDTO> refresh(
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response) {
+
+        if(refreshToken == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        AuthDTO result = authService.refresh(refreshToken);
+        CookieUtils.addRefreshTokenCookie(response, result.getRefreshToken());
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(
             @RequestHeader("Authorization") String authHeader,
-            @Valid @RequestBody RefreshRequest request) {
-        String accessToken = authHeader.replace("Bearer ", "");
-        authService.logout(accessToken, request.getRefreshToken());
+            @CookieValue(name = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response) {
+
+        if(refreshToken != null) {
+            String accessToken = authHeader.replace("Bearer ", "");
+            authService.logout(accessToken, refreshToken);
+        }
+
+        CookieUtils.clearRefreshTokenCookie(response);
         return ResponseEntity.noContent().build();
     }
 }

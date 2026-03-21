@@ -21,6 +21,7 @@ public class SecurityConfig {
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(ex -> ex
                         .pathMatchers("/api/auth/register", "/api/auth/login", "/actuator/health").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/dogs/**").permitAll()

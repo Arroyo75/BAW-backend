@@ -48,4 +48,4 @@ management:
 logging:
   level:
     root: WARN
-    com.yourpackage: INFO
+    com.baw: INFO
