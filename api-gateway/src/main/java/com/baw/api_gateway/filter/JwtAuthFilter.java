@@ -28,7 +28,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     }
 
     private static final List<Map.Entry<HttpMethod, String>> PUBLIC_ROUTES = List.of(
-            Map.entry(HttpMethod.GET, "/api/dogs")
+            Map.entry(HttpMethod.GET, "/api/dogs"),
+            Map.entry(HttpMethod.GET, "/api/ratings")
     );
 
     private static final List<String> PUBLIC_PATHS = List.of(

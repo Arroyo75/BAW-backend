@@ -1,4 +1,4 @@
-package com.baw.dog_service.config;
+package com.baw.rating_service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,8 +14,6 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
-import java.security.interfaces.RSAPublicKey;
 
 @Configuration
 @EnableWebSecurity
@@ -35,7 +33,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/dogs", "/api/dogs/{id}", "/api/dogs/{ownerId}/owner").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/ratings", "/api/ratings/summaries", "/api/ratings/{dogId}/summary").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
@@ -78,3 +76,4 @@ public class SecurityConfig {
         return converter;
     }
 }
+

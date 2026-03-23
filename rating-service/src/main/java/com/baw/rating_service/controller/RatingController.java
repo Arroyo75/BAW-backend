@@ -7,6 +7,9 @@ import com.baw.rating_service.service.IRatingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,11 +22,13 @@ public class RatingController {
 
     private final IRatingService ratingService;
 
-    @PostMapping("/{judgeId}")
+    @PreAuthorize("hasRole('JUDGE')")
+    @PostMapping
     public ResponseEntity<RatingDTO> submitRating(
             @Valid @RequestBody RatingRequest request,
-            @PathVariable UUID judgeId) {
+            @AuthenticationPrincipal Jwt jwt) {
 
+        UUID judgeId = UUID.fromString(jwt.getSubject());
         RatingDTO rating = ratingService.submitRating(judgeId, request);
         return ResponseEntity.ok(rating);
     }
