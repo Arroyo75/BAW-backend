@@ -11,9 +11,4 @@ public class UserSpecification {
                         cb.like(cb.lower(root.get("email")), "%" + search.toLowerCase() + "%")
                 );
     }
-
-    public static Specification<User> isHasDogs(Boolean hasDogs) {
-        return (root, query, cb) -> hasDogs == null ? null :
-                cb.equal(root.get("hasDogs"), hasDogs);
-    }
 }

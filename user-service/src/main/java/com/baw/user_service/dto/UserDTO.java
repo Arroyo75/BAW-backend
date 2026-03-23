@@ -18,7 +18,6 @@ public class UserDTO {
     private String lastName;
     private String phoneNumber;
     private Boolean active;
-    private Boolean hasDogs;
     private Set<Role> roles;
     private Instant createdAt;
     private Instant updatedAt;

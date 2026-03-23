@@ -42,8 +42,7 @@ public class UserService implements IUserService{
     @Override
     public Page<UserDTO> getUsers(UserFilterRequest filter) {
         Specification<User> spec = Specification
-                .where(UserSpecification.matchesSearch(filter.getSearch()))
-                .and(UserSpecification.isHasDogs(filter.getHasDogs()));
+                .where(UserSpecification.matchesSearch(filter.getSearch()));
 
         Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), Sort.by("createdAt").descending());
         return userRepository.findAll(spec, pageable)
@@ -144,7 +143,6 @@ public class UserService implements IUserService{
                 .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .active(user.getActive())
-                .hasDogs(user.getHasDogs())
                 .roles(user.getRoles())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())

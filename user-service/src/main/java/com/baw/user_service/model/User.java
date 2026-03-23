@@ -55,10 +55,6 @@ public class User {
     @Builder.Default
     private Boolean active = true;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean hasDogs = false;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 

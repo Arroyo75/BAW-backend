@@ -5,7 +5,6 @@ import lombok.Data;
 @Data
 public class UserFilterRequest {
     private String search;
-    private Boolean hasDogs;
     private int page = 0;
     private int size = 20;
 }

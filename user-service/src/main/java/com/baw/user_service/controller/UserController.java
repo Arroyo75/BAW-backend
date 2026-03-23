@@ -37,14 +37,12 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<Page<UserDTO>> getUsers(
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) Boolean hasDogs,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
 
         UserFilterRequest filter = new UserFilterRequest();
         filter.setSearch(search);
-        filter.setHasDogs(hasDogs);
         filter.setPage(page);
         filter.setSize(size);
 
