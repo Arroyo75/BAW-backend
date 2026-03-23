@@ -145,6 +145,7 @@ public class UserService implements IUserService{
                 .phoneNumber(user.getPhoneNumber())
                 .active(user.getActive())
                 .hasDogs(user.getHasDogs())
+                .roles(user.getRoles())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();

@@ -1,9 +1,11 @@
 package com.baw.user_service.dto;
 
+import com.baw.user_service.model.Role;
 import lombok.Builder;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.Set;
 import java.util.UUID;
 
 @Builder
@@ -17,6 +19,7 @@ public class UserDTO {
     private String phoneNumber;
     private Boolean active;
     private Boolean hasDogs;
+    private Set<Role> roles;
     private Instant createdAt;
     private Instant updatedAt;
 }
