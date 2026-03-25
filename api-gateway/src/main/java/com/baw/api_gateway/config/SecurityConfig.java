@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeExchange(ex -> ex
-                        .pathMatchers("/api/auth/register", "/api/auth/login", "/actuator/health").permitAll()
+                        .pathMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh", "/actuator/health").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/dogs/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/api/ratings/**").permitAll()
                         .anyExchange().authenticated()
