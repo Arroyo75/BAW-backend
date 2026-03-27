@@ -11,6 +11,23 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
       GRANT USAGE, SELECT ON SEQUENCES TO rating_svc_user;
 
+CREATE TABLE ratings (
+    id         UUID        PRIMARY KEY,
+    judge_id   UUID        NOT NULL,
+    dog_id     UUID        NOT NULL,
+    rating     INTEGER     NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
+    CONSTRAINT uq_dog_judge UNIQUE (dog_id, judge_id)
+);
+
+CREATE TABLE rating_summaries (
+    dog_id     UUID        PRIMARY KEY,
+    average    FLOAT       NOT NULL,
+    count      INTEGER     NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS audit_log (
     id          BIGSERIAL       PRIMARY KEY,
     tbl_name    VARCHAR(100)    NOT NULL,
@@ -38,3 +55,9 @@ BEGIN
     RETURN NULL;
 END;
 $$;
+
+ALTER TABLE ratings OWNER TO postgres;
+ALTER TABLE rating_summaries OWNER TO postgres;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ratings TO rating_svc_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON rating_summaries TO rating_svc_user;

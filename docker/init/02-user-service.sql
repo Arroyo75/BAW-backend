@@ -11,6 +11,36 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
       GRANT USAGE, SELECT ON SEQUENCES TO user_svc_user;
 
+CREATE TABLE users (
+    id            UUID PRIMARY KEY,
+    username      VARCHAR(255) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    email         VARCHAR(255) NOT NULL UNIQUE,
+    first_name    VARCHAR(30)  NOT NULL,
+    last_name     VARCHAR(30)  NOT NULL,
+    phone_number  VARCHAR(12),
+    active        BOOLEAN      NOT NULL DEFAULT true,
+    created_at    TIMESTAMPTZ  NOT NULL,
+    updated_at    TIMESTAMPTZ  NOT NULL
+);
+
+CREATE INDEX username_id ON users (username);
+CREATE INDEX email_id    ON users (email);
+
+CREATE TABLE user_roles (
+    user_id UUID        NOT NULL REFERENCES users(id),
+    role    VARCHAR(255) CHECK (role IN ('ADMIN', 'JUDGE', 'USER'))
+);
+
+CREATE TABLE refresh_tokens (
+    id         UUID         PRIMARY KEY,
+    token      VARCHAR(2048) NOT NULL UNIQUE,
+    user_id    UUID          NOT NULL REFERENCES users(id),
+    expires_at TIMESTAMPTZ   NOT NULL,
+    revoked    BOOLEAN       NOT NULL DEFAULT false,
+    family     VARCHAR(36)
+);
+
 CREATE TABLE IF NOT EXISTS audit_log (
     id          BIGSERIAL       PRIMARY KEY,
     tbl_name    VARCHAR(100)    NOT NULL,
@@ -38,3 +68,15 @@ BEGIN
     RETURN NULL;
 END;
 $$;
+
+
+-- Transfer ownership to postgres so app user cannot drop
+ALTER TABLE users          OWNER TO postgres;
+ALTER TABLE user_roles     OWNER TO postgres;
+ALTER TABLE refresh_tokens OWNER TO postgres;
+ALTER TABLE audit_log      OWNER TO postgres;
+
+-- Grant DML only to app user
+GRANT SELECT, INSERT, UPDATE, DELETE ON users          TO user_svc_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON user_roles     TO user_svc_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON refresh_tokens TO user_svc_user;

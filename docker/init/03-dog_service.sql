@@ -11,6 +11,18 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
       GRANT USAGE, SELECT ON SEQUENCES TO dog_svc_user;
 
+CREATE TABLE dogs (
+    id          UUID          PRIMARY KEY,
+    owner_id    UUID          NOT NULL,
+    nickname    VARCHAR(255)  NOT NULL,
+    breed       VARCHAR(255)  NOT NULL,
+    age         INTEGER       NOT NULL,
+    image       VARCHAR(255),
+    description VARCHAR(1000) NOT NULL,
+    created_at  TIMESTAMPTZ   NOT NULL,
+    updated_at  TIMESTAMPTZ   NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS audit_log (
     id          BIGSERIAL       PRIMARY KEY,
     tbl_name    VARCHAR(100)    NOT NULL,
@@ -38,3 +50,7 @@ BEGIN
     RETURN NULL;
 END;
 $$;
+
+ALTER TABLE dogs OWNER TO postgres;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON dogs TO dog_svc_user;

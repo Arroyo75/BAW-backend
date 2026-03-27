@@ -116,6 +116,7 @@ uploads/
 temp/
 
 docker/init/01-databases.sql
+docker/init/05-seed.sql
 
 private.pem
 public.pem

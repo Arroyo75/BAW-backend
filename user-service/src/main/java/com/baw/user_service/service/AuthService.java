@@ -166,6 +166,7 @@ public class AuthService implements IAuthService {
                 .lastName(user.getLastName())
                 .phoneNumber(user.getPhoneNumber())
                 .active(user.getActive())
+                .roles(user.getRoles())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
