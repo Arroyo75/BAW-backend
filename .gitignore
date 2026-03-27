@@ -86,7 +86,6 @@ docker-compose.override.yml
 
 #logs
 *.log
-*.sql
 *.sqlite
 
 *.tmp
@@ -116,7 +115,7 @@ coverage/
 uploads/
 temp/
 
-init-db.sql
+docker/init/01-databases.sql
 
 private.pem
 public.pem
