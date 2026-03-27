@@ -37,10 +37,10 @@ REVOKE ALL ON audit_log FROM dog_svc_user;
 CREATE OR REPLACE FUNCTION audit_trigger_fn()
 RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
 BEGIN
-    IF TP_OP = 'DELETE' THEN
+    IF TG_OP = 'DELETE' THEN
        INSERT INTO audit_log(tbl_name, operation, old_row)
        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(OLD)::jsonb);
-    ELSIF TP_OP = 'INSERT' THEN
+    ELSIF TG_OP = 'INSERT' THEN
           INSERT INTO audit_log(tbl_name, operation, new_row)
           VALUES (TG_TABLE_NAME, TG_OP, row_to_json(NEW)::jsonb);
     ELSE
@@ -50,6 +50,10 @@ BEGIN
     RETURN NULL;
 END;
 $$;
+
+CREATE TRIGGER audit_dogs
+    AFTER INSERT OR UPDATE OR DELETE ON dogs
+    FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
 
 ALTER TABLE dogs OWNER TO postgres;
 
