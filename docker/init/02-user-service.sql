@@ -41,6 +41,16 @@ CREATE TABLE refresh_tokens (
     family     VARCHAR(36)
 );
 
+-- Transfer ownership to postgres so app user cannot drop
+ALTER TABLE users          OWNER TO postgres;
+ALTER TABLE user_roles     OWNER TO postgres;
+ALTER TABLE refresh_tokens OWNER TO postgres;
+
+-- Grant DML only to app user
+GRANT SELECT, INSERT, UPDATE, DELETE ON users          TO user_svc_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON user_roles     TO user_svc_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON refresh_tokens TO user_svc_user;
+
 CREATE TABLE IF NOT EXISTS audit_log (
     id          BIGSERIAL       PRIMARY KEY,
     tbl_name    VARCHAR(100)    NOT NULL,
@@ -49,6 +59,8 @@ CREATE TABLE IF NOT EXISTS audit_log (
     old_row     JSONB,
     new_row     JSONB
 );
+
+ALTER TABLE audit_log      OWNER TO postgres;
 
 REVOKE ALL ON audit_log FROM user_svc_user;
 
@@ -80,15 +92,3 @@ CREATE TRIGGER audit_user_roles
 CREATE TRIGGER audit_refresh_tokens
     AFTER INSERT OR UPDATE OR DELETE ON refresh_tokens
     FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
-
-
--- Transfer ownership to postgres so app user cannot drop
-ALTER TABLE users          OWNER TO postgres;
-ALTER TABLE user_roles     OWNER TO postgres;
-ALTER TABLE refresh_tokens OWNER TO postgres;
-ALTER TABLE audit_log      OWNER TO postgres;
-
--- Grant DML only to app user
-GRANT SELECT, INSERT, UPDATE, DELETE ON users          TO user_svc_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON user_roles     TO user_svc_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON refresh_tokens TO user_svc_user;

@@ -1,4 +1,4 @@
-package com.baw.dog_service.exception;
+package com.baw.rating_service.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;

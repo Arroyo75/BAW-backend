@@ -28,6 +28,12 @@ CREATE TABLE rating_summaries (
     updated_at TIMESTAMPTZ NOT NULL
 );
 
+ALTER TABLE ratings OWNER TO postgres;
+ALTER TABLE rating_summaries OWNER TO postgres;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON ratings TO rating_svc_user;
+GRANT SELECT, INSERT, UPDATE, DELETE ON rating_summaries TO rating_svc_user;
+
 CREATE TABLE IF NOT EXISTS audit_log (
     id          BIGSERIAL       PRIMARY KEY,
     tbl_name    VARCHAR(100)    NOT NULL,
@@ -36,6 +42,8 @@ CREATE TABLE IF NOT EXISTS audit_log (
     old_row     JSONB,
     new_row     JSONB
 );
+
+ALTER TABLE audit_log      OWNER TO postgres;
 
 REVOKE ALL ON audit_log FROM rating_svc_user;
 
@@ -63,9 +71,3 @@ CREATE TRIGGER audit_ratings
 CREATE TRIGGER audit_rating_summaries
     AFTER INSERT OR UPDATE OR DELETE ON rating_summaries
     FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
-
-ALTER TABLE ratings OWNER TO postgres;
-ALTER TABLE rating_summaries OWNER TO postgres;
-
-GRANT SELECT, INSERT, UPDATE, DELETE ON ratings TO rating_svc_user;
-GRANT SELECT, INSERT, UPDATE, DELETE ON rating_summaries TO rating_svc_user;

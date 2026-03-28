@@ -23,6 +23,10 @@ CREATE TABLE dogs (
     updated_at  TIMESTAMPTZ   NOT NULL
 );
 
+ALTER TABLE dogs OWNER TO postgres;
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON dogs TO dog_svc_user;
+
 CREATE TABLE IF NOT EXISTS audit_log (
     id          BIGSERIAL       PRIMARY KEY,
     tbl_name    VARCHAR(100)    NOT NULL,
@@ -31,6 +35,8 @@ CREATE TABLE IF NOT EXISTS audit_log (
     old_row     JSONB,
     new_row     JSONB
 );
+
+ALTER TABLE audit_log      OWNER TO postgres;
 
 REVOKE ALL ON audit_log FROM dog_svc_user;
 
@@ -54,7 +60,3 @@ $$;
 CREATE TRIGGER audit_dogs
     AFTER INSERT OR UPDATE OR DELETE ON dogs
     FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
-
-ALTER TABLE dogs OWNER TO postgres;
-
-GRANT SELECT, INSERT, UPDATE, DELETE ON dogs TO dog_svc_user;
