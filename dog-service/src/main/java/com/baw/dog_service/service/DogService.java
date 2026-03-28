@@ -1,5 +1,6 @@
 package com.baw.dog_service.service;
 
+import com.baw.dog_service.client.DogApiClient;
 import com.baw.dog_service.dto.DogDTO;
 import com.baw.dog_service.exception.ResourceNotFoundException;
 import com.baw.dog_service.model.Dog;
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class DogService implements IDogService {
 
     private final DogRepository dogRepository;
+    private final DogApiClient apiClient;
 
     @Override
     public DogDTO getDogById(UUID id) {
@@ -53,12 +55,21 @@ public class DogService implements IDogService {
     @Override
     public DogDTO createDog(CreateDogRequest request, UUID ownerId) {
 
+        String image;
+
+        if(request.getImage() == null || request.getImage().isBlank()) {
+            image = apiClient.fetchImageForBreed(request.getBreed())
+                    .orElse(null);
+        } else {
+            image = request.getImage();
+        }
+
         Dog dog = Dog.builder()
                 .ownerId(ownerId)
                 .nickname(request.getNickname())
                 .breed(request.getBreed())
                 .age(request.getAge())
-                .image(request.getImage())
+                .image(image)
                 .description(request.getDescription())
                 .build();
 

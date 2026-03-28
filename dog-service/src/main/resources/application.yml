@@ -1,6 +1,8 @@
 spring:
   application:
     name: dog-service
+  profiles:
+    active: dev
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -46,3 +48,7 @@ logging:
     com.baw: INFO
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+app:
+  seed:
+    owner-ids: ${SEED_OWNER_IDS}
