@@ -1,0 +1,8 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Test RSA keys for CI - not used in any real environment"
+paths = [
+    '''user-service/src/test/resources/application-test.yml'''
+]
