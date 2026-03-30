@@ -1,0 +1,131 @@
+name: CI - Dog Service
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'dog-service/**'
+      - '.github/workflows/ci-dog-service.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'dog-service/**'
+      - '.github/workflows/ci-dog-service.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dog-service
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build & Test
+        run: mvn clean verify
+
+  gitleaks:
+    name: Secret Scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_CONFIG: .gitleaks.toml
+
+  owasp:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dog-service
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: 'maven'
+
+    - name: Run OWASP Dependency Check
+      run: mvn dependency-check:check -DnvdApiKey=${{ secrets.NVD_API_KEY }} -DossindexAnalyzerEnabled=false
+
+    - name: Upload OWASP Report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: owasp-report-dog-service
+        path: dog-service/target/dependency-check-report.html
+
+  trivy:
+    name: Container Scanning
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t baw/dog-service:${{ github.sha }} ./dog-service
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: baw/dog-service:${{ github.sha }}
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy results to GitHub Security Tab
+        uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  sbom:
+    name: Generate SBOM
+    runs-on: ubuntu-latest
+    needs: build
+    defaults:
+      run:
+        working-directory: dog-service
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Generate SBOM
+        run: mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-dog-service
+          path: dog-service/target/bom.xml
