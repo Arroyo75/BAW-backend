@@ -7,4 +7,4 @@ spring:
 
 jwt:
   private-key: classpath:test-private-key.pem
-  public-key: classpath:test-public-key.pemsssdawdsasd
+  public-key: classpath:test-public-key.pem
