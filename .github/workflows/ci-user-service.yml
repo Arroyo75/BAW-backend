@@ -67,7 +67,7 @@ jobs:
         cache: 'maven'
 
     - name: Run OWASP Dependency Check
-      run: mvn dependency-check:check -DnvdApiKey=${{ secrets.NVD_API_KEY }}
+      run: mvn dependency-check:check -DnvdApiKey=${{ secrets.NVD_API_KEY }} -DossindexAnalyzerEnabled=false
 
     - name: Upload OWASP Report
       uses: actions/upload-artifact@v4
@@ -100,7 +100,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
-          sarif-file: 'trivy-results.sarif'
+          sarif_file: 'trivy-results.sarif'
 
   sbom:
     name: Generate SBOM
