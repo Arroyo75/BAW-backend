@@ -4,3 +4,7 @@ spring:
       - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+jwt:
+  private-key: classpath:test-private-key.pem
+  public-key: classpath:test-public-key.pemsssdawdsasd
