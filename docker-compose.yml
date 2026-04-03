@@ -27,7 +27,7 @@ services:
       context: ./user-service
       dockerfile: Dockerfile
     container_name: user-service
-    env_file:
+    env_file: #brak bindu serwisu do hosta
       - .env
     networks:
       - backend-network
@@ -48,12 +48,12 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    security_opt:
+    security_opt: #proces wewnątrz kontenera nie może eskalować uprawnień
       - no-new-privileges:true
-    cap_drop:
+    cap_drop: #usuwa wszystkie capabilities z kontenera, minimum do uruchomienia aplikacji Java
       - ALL
     read_only: true
-    tmpfs:
+    tmpfs: #tymczasowe pliki dla Javy, wirtualny system plików w pamięci RAM
       - /tmp
 
   dog-service:

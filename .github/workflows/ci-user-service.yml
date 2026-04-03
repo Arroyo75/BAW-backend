@@ -17,6 +17,16 @@ jobs:
   build:
     name: Build & Test
     runs-on: ubuntu-latest
+    env:
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      USER_SVC_DB_PASSWORD: ${{ secrets.USER_SVC_DB_PASSWORD }}
+      DOG_SVC_DB_PASSWORD: ${{ secrets.DOG_SVC_DB_PASSWORD }}
+      RATING_SVC_DB_PASSWORD: ${{ secrets.RATING_SVC_DB_PASSWORD }}
+      JWT_PRIVATE_KEY: ${{ secrets.JWT_PRIVATE_KEY }}
+      JWT_PUBLIC_KEY: ${{ secrets.JWT_PUBLIC_KEY }}
+      SEED_OWNER_IDS: ${{ secrets.SEED_OWNER_IDS }}
     defaults:
       run:
         working-directory: user-service
@@ -31,6 +41,12 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: 'maven'
+
+      - name: Write RSA test keys
+        run: |
+          mkdir -p src/test/resources
+          printf '%s' "$JWT_PRIVATE_KEY" > src/test/resources/test-private.pem
+          printf '%s' "$JWT_PUBLIC_KEY"  > src/test/resources/test-public.pem
 
       - name: Build & Test
         run: mvn clean verify

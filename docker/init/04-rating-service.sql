@@ -1,9 +1,7 @@
--- Schema already created by Hibernate on startup
--- Grant table/sequence permissions to app user
 
 \connect rating_service_db
 
-GRANT USAGE, CREATE ON SCHEMA public TO rating_svc_user;
+GRANT USAGE ON SCHEMA public TO rating_svc_user;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
       GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO rating_svc_user;
