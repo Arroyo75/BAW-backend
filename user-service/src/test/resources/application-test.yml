@@ -6,5 +6,42 @@ spring:
       - org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
 
 jwt:
-  private-key: ${JWT_PRIVATE_KEY_PATH:classpath:test-private.pem}
-  public-key: ${JWT_PUBLIC_KEY_PATH:classpath:test-public.pem}
+  private-key: |
+    -----BEGIN PRIVATE KEY-----
+    MIIEpgIBAAKCAQEAuzO/JR1mn8iDpyHToy5CHeTftr4Nk02iLFd2Dfx1h0ykc40i
+    qQTDAlC6s7w9VNLP56N/b0n6LWsJy88blDM6wnlZf50dgVLPyQ3UJp8pP5Bq5FEJ
+    SCUPYpcksXKqJl5eCTtUzFUqI84Lk9JqvQpIz/z6JjgefLjJEe5gV3Lc+tdXazGO
+    6RZZMt8TSnGQOWKc2TYQj5sPmI0IrZIBBjJV8OBbRDMyGGj/78ZPT62NuTxrCwug
+    uf34RQCPxSFoa7ES4cUOakS4T7Ld0F2billqdgubJRoYVZVJzBCUH0rYuYYS8XwR
+    aLGFQ8jUYYF8BufIf/uYDnwJThV7jJ0ZwC4CyQIDAQABAoIBAQCNqu9wavuK1/ep
+    t5Ot3gfzD42tgc5MN2gPHnEczH000u9w8tHUDuJ1Ehr4ge/4DUGBDt4VnmpRjLtx
+    HV7FnK9PFP6B8Kivgbf1cx2lzLUugWAjQKBBlKo79h2ynA/f0XJgkiHuMFUfm4Jv
+    b8GPJgVMQSodWkLYKA8iHr+R7j8FJD6PwvgegfPw2mEsamYHcjS5NblAznZ6GzZY
+    owCvNtOPdL3fXBVnHBGq7wZemhUhPidkK2nDkNNZCB2qqAv49kmgq8igIOylZ9e7
+    uFtPsBjqW4uSlSabTnI07mGKYtvkIKfjFR83RtNGYpZlk3GH4Gl6ophid7gEFr9t
+    BLtMOWfBAoGBANwiwhAhq7rUiAcaY65aMUJYN2K7f7UZ4sdHvLaFrt9xZc0zT0TR
+    //fA4iJpuKoohw8K1I8n2PKx2LxRIhfV1iXnCRe6zFYRKrOt0nCcIfC68wsvZHCf
+    LziFDL7M/rawQZEliXtIW2IYX98GYNBN/dUw9486z8i6P3aoWKR7BTWdAoGBANmz
+    a2MaxxVHndXKH4CIftxgHMo/BIBL0ugfJvFBRlrHNEl0v7qh7hjEiTLgoJwmwKuq
+    Oi0jwNlW+QwIISQwgkaHtBcp0Lo/6acso7N9CKqBsgUudseG4ooVz4BgYGAwObAh
+    Jt97gJhAYKeEPyEk8tzkIHMXL/yhOLakMxJjN7AdAoGBANLg5SDI8JbIVArh5821
+    Du0sTtphHYSiaJFYkloTFCNuoQQC/BPETD3NY5NtzX4L1t29FUSR+oz7e9Fis5M7
+    wKqMeTRnOKnWRh7cC/TeTNEsdfkoDEKq63RsWHpLLFJb5GOkHuCfvxLooKaomIPT
+    wq7A+tYVk8kJShRkTo46XxItAoGBALHy6PqvbsBENA4HE8z6xcfZgG8JJ+K/F/zJ
+    Sgm2c43Mez74AajKqFbyf7toxaAeRSuND9TJ/t8pKpXdJ0nvpO2GC31LnuQ/Tfxq
+    jr0unSDStvNpUYozBYYd4elr3huCEAWac64Fw82wAdGsVfX/v80zZBrvfzgfiL4y
+    ZdTH6UM5AoGBAMRad4ailVhYmRZeA6a8+C7nf3Hs/PpArd6S4IxNl/aXLK/Jt/Xq
+    CwT3gE0sNDxJAUb3q6M3cLVF5vX+ie+01x7oRImB+a2fbUoXmyUaIy1A6b6NF0da
+    gRri2F4g+T8Y97R5L3gfGLKH+nCKCBZG2iCV/ZPueg7/Byx+FPmjjiQ/
+    -----END PRIVATE KEY-----
+
+  public-key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuzO/JR1mn8iDpyHToy5C
+    HeTftr4Nk02iLFd2Dfx1h0ykc40iqQTDAlC6s7w9VNLP56N/b0n6LWsJy88blDM6
+    wnlZf50dgVLPyQ3UJp8pP5Bq5FEJSCUPYpcksXKqJl5eCTtUzFUqI84Lk9JqvQpI
+    z/z6JjgefLjJEe5gV3Lc+tdXazGO6RZZMt8TSnGQOWKc2TYQj5sPmI0IrZIBBjJV
+    8OBbRDMyGGj/78ZPT62NuTxrCwuguf34RQCPxSFoa7ES4cUOakS4T7Ld0F2billq
+    dgubJRoYVZVJzBCUH0rYuYYS8XwRaLGFQ8jUYYF8BufIf/uYDnwJThV7jJ0ZwC4C
+    yQIDAQAB
+    -----END PUBLIC KEY-----

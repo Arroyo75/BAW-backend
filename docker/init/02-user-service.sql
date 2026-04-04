@@ -1,7 +1,9 @@
+-- Schema already created by Hibernate on startup
+-- Grant table/sequence permissions to app user
 
 \connect user_service_db
 
-GRANT USAGE ON SCHEMA public TO user_svc_user;
+GRANT USAGE, CREATE ON SCHEMA public TO user_svc_user;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
       GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO user_svc_user;
@@ -44,7 +46,7 @@ ALTER TABLE users          OWNER TO postgres;
 ALTER TABLE user_roles     OWNER TO postgres;
 ALTER TABLE refresh_tokens OWNER TO postgres;
 
--- Grant only to app user
+-- Grant DML only to app user
 GRANT SELECT, INSERT, UPDATE, DELETE ON users          TO user_svc_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON user_roles     TO user_svc_user;
 GRANT SELECT, INSERT, UPDATE, DELETE ON refresh_tokens TO user_svc_user;

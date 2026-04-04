@@ -1,7 +1,9 @@
+-- Schema already created by Hibernate on startup
+-- Grant table/sequence permissions to app user
 
 \connect dog_service_db
 
-GRANT USAGE ON SCHEMA public TO dog_svc_user;
+GRANT USAGE, CREATE ON SCHEMA public TO dog_svc_user;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
       GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO dog_svc_user;
