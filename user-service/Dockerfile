@@ -14,14 +14,17 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
+#non-root user and group with no shell
 RUN apk add --no-cache curl && \
     addgroup --system appgroup && \
     adduser --system --ingroup appgroup --no-create-home appuser
 
 COPY --from=build /app/target/*.jar app.jar
 
+#appuser owns the jar file
 RUN chown appuser:appgroup app.jar
 
+#switching to non-root
 USER appuser
 
 EXPOSE 8081

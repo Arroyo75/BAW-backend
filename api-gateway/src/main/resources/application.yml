@@ -13,8 +13,8 @@ spring:
               filters:
                 - name: RequestRateLimiter
                   args:
-                    redis-rate-limiter.replenishRate: 10
-                    redis-rate-limiter.burstCapacity: 20
+                    redis-rate-limiter.replenishRate: 10 #10/sec
+                    redis-rate-limiter.burstCapacity: 20 #max spike at 20
                     key-resolver: "#{@ipKeyResolver}"
             - id: dog-service
               uri: http://dog-service:8082
@@ -54,10 +54,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health #shows only health
   endpoint:
     health:
-      show-details: never
+      show-details: never #with no details
     gateway:
       enabled: true
 

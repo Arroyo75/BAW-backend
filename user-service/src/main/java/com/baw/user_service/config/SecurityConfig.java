@@ -37,7 +37,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //no http session, only tokens
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/.well-known/jwks.json").permitAll()
@@ -46,8 +46,8 @@ public class SecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .decoder(jwtDecoder())
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                                .decoder(jwtDecoder()) //plugs in customer decoder
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter()) //custom authentication converter
                         )
                 )
                 .build();
@@ -58,9 +58,9 @@ public class SecurityConfig {
 
         NimbusJwtDecoder decoder = NimbusJwtDecoder
                 .withPublicKey(publicKey)
-                .build();
+                .build(); //builds decoder with the public key directly
 
-        OAuth2TokenValidator<Jwt> validator = JwtValidators.createDefault();
+        OAuth2TokenValidator<Jwt> validator = JwtValidators.createDefault(); //checks exp(iry) and nbf
         decoder.setJwtValidator(validator);
 
         return token -> {
@@ -79,12 +79,12 @@ public class SecurityConfig {
 
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter(); //authorities extractor
         authoritiesConverter.setAuthoritiesClaimName("X-User-Roles");
-        authoritiesConverter.setAuthorityPrefix("ROLE_");
+        authoritiesConverter.setAuthorityPrefix("ROLE_"); //ROLE_ADMIN, ROLE_JUDGE
 
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter); //plugs custom extractor into main one
         return converter;
     }
 }

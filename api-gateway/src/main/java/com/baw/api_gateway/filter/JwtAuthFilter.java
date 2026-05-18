@@ -42,6 +42,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
+        //ServerWebExchange holds entire HTTP conversation,
+        //WebFlux version for Serverlet Request/Response in one object
+
         String path = exchange.getRequest().getPath().toString();
         HttpMethod method = exchange.getRequest().getMethod();
 
@@ -73,18 +76,18 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                                   exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
                                   return exchange.getResponse().setComplete();
                               }
-                              return chain.filter(exchange);
+                              return chain.filter(exchange); //passes the request forward
                           });
                 })
                 .onErrorResume(e -> {
                     log.warn("Rejected request - invalid token: path={}, reason={}", path, e.getMessage());
                     exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                    return exchange.getResponse().setComplete();
+                    return exchange.getResponse().setComplete(); //stops request dead
                 });
     }
 
     @Override
     public int getOrder() {
         return -1;
-    }
+    } //filter runs first because of blacklisting
 }

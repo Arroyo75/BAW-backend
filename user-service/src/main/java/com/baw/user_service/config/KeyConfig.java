@@ -31,9 +31,10 @@ public class KeyConfig {
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s+", "");
 
-        byte[] decoded = Base64.getDecoder().decode(key);
-        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded);
-        return (RSAPrivateKey) KeyFactory.getInstance("RSA").generatePrivate(spec);
+        byte[] decoded = Base64.getDecoder().decode(key); //decodes Base64 string into raw bytes
+        PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(decoded); //wraps raw bytes into class that Java can use
+        return (RSAPrivateKey) KeyFactory.getInstance("RSA") //gets KeyFactory that knows RSA
+                .generatePrivate(spec); //builds RSAPrivate Key
     }
 
     @Bean
@@ -50,9 +51,9 @@ public class KeyConfig {
 
     @Bean
     public JWKSet jwkSet(RSAPublicKey publicKey) {
-        RSAKey jwk = new RSAKey.Builder(publicKey)
+        RSAKey jwk = new RSAKey.Builder(publicKey) //jwk structure for key
                 .keyID("baw-key-1")
-                .keyUse(KeyUse.SIGNATURE)
+                .keyUse(KeyUse.SIGNATURE) //signing/veryfication, not encryption
                 .algorithm(JWSAlgorithm.RS256)
                 .build();
         return new JWKSet(jwk);

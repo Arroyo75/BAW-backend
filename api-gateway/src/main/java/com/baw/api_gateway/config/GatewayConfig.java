@@ -14,7 +14,7 @@ public class GatewayConfig {
     public KeyResolver ipKeyResolver() {
         return exchange -> Mono.just(
                 Objects.requireNonNull(exchange.getRequest().getRemoteAddress())
-                        .getAddress().getHostAddress()
+                        .getAddress().getHostAddress() //extracts ip which becomes Redis key
         );
     }
 }

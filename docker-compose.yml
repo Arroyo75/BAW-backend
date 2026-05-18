@@ -48,12 +48,12 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-    security_opt:
+    security_opt: #process inside container can't escalate its privileges
       - no-new-privileges:true
-    cap_drop:
+    cap_drop: #leaves container with minimum capabilities, only to run Java app
       - ALL
-    read_only: true
-    tmpfs:
+    read_only: true #container can't write to drive
+    tmpfs: #temporary files in RAM not on drive
       - /tmp
 
   dog-service:

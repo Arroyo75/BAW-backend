@@ -3,7 +3,7 @@
 
 \connect user_service_db
 
-GRANT USAGE, CREATE ON SCHEMA public TO user_svc_user;
+GRANT USAGE ON SCHEMA public TO user_svc_user;
 
 ALTER DEFAULT PRIVILEGES IN SCHEMA public
       GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO user_svc_user;
@@ -14,7 +14,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 CREATE TABLE users (
     id            UUID PRIMARY KEY,
     username      VARCHAR(255) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(60) NOT NULL,
     email         VARCHAR(255) NOT NULL UNIQUE,
     first_name    VARCHAR(30)  NOT NULL,
     last_name     VARCHAR(30)  NOT NULL,

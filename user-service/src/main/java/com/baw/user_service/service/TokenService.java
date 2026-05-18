@@ -42,7 +42,7 @@ public class TokenService implements ITokenService {
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
                 .signWith(privateKey)
-                .compact();
+                .compact(); //generates token String
     }
 
     @Override
@@ -73,7 +73,7 @@ public class TokenService implements ITokenService {
         redis.opsForValue().set(
                 "blacklist:" + jti,
                 "revoked",
-                ttlMs,
+                ttlMs, //remaining lifetime in ms
                 TimeUnit.MILLISECONDS
         );
     }

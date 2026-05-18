@@ -19,10 +19,10 @@ public class RefreshToken {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 2048)
+    @Column(nullable = false, unique = true, length = 2048) //JWTs are 400-800+ long
     private String token;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY) //fetch users when you need them
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
