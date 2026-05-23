@@ -29,7 +29,7 @@ ratingService:
 
 apiGateway:
   image: ghcr.io/Arroyo75/baw-api-gateway
-  tag: sha-ca33703
+  tag: sha-9aab196
   port: 8080
   replicas: 1
 
