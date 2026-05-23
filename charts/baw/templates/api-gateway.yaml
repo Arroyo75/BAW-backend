@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.apiGateway.replicas }}
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: {{ .Values.apiGateway.image }}:{{ .Values.apiGateway.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.apiGateway.port }}
+          env:
+            - name: SPRING_DATA_REDIS_HOST
+              value: "redis"
+            - name: SPRING_DATA_REDIS_PORT
+              value: "6379"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.apiGateway.port }}
+            initialDelaySeconds: {{ .Values.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.apiGateway.port }}
+            initialDelaySeconds: {{ .Values.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.failureThreshold }}
+          securityContext:
+            allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
+            runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: {{ .Values.securityContext.readOnlyRootFilesystem }}
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-gateway
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: api-gateway
+  ports:
+    - port: {{ .Values.apiGateway.port }}
+      targetPort: {{ .Values.apiGateway.port }}

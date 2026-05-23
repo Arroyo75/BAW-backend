@@ -1,0 +1,56 @@
+namespace: baw
+
+postgres:
+  image: postgres:15-alpine
+  storage: 1Gi
+  database: postgres
+
+redis:
+  image: redis:7-alpine
+  storage: 512Mi
+
+userService:
+  image: docker.io/library/baw-user-service
+  tag: latest
+  port: 8081
+  replicas: 1
+
+dogService:
+  image: docker.io/library/baw-dog-service
+  tag: latest
+  port: 8082
+  replicas: 1
+
+ratingService:
+  image: docker.io/library/baw-rating-service
+  tag: latest
+  port: 8083
+  replicas: 1
+
+apiGateway:
+  image: docker.io/library/baw-api-gateway
+  tag: latest
+  port: 8080
+  replicas: 1
+
+frontend:
+  image: docker.io/library/baw-frontend
+  tag: latest
+  port: 80
+  replicas: 1
+
+ingress:
+  className: nginx
+  host: ""
+
+probes:
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 10
+  failureThreshold: 5
+
+securityContext:
+  runAsUser: 1001
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true

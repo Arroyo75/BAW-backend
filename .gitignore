@@ -116,7 +116,14 @@ uploads/
 temp/
 
 docker/init/01-databases.sql
+docker/init/01-databases.sh
 docker/init/05-seed.sql
 
 private.pem
 public.pem
+
+k8s/sealed-secrets/*-raw.yaml
+k8s/sealed-secrets-public-cert.pem
+k8s/deployments/postgres-init-configmap.yaml
+
+charts/baw/old.yaml

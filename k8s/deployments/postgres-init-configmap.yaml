@@ -1,0 +1,249 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-init-scripts
+  namespace: baw
+data:
+  01-databases.sh: |
+    #!/bin/bash
+    set -e
+
+    psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" <<-EOSQL
+        CREATE DATABASE user_service_db;
+        CREATE DATABASE dog_service_db;
+        CREATE DATABASE rating_service_db;
+
+        CREATE USER user_svc_user WITH PASSWORD '$USER_SVC_DB_PASSWORD';
+        CREATE USER dog_svc_user WITH PASSWORD '$DOG_SVC_DB_PASSWORD';
+        CREATE USER rating_svc_user WITH PASSWORD '$RATING_SVC_DB_PASSWORD';
+
+        REVOKE ALL ON DATABASE user_service_db FROM PUBLIC;
+        REVOKE ALL ON DATABASE dog_service_db FROM PUBLIC;
+        REVOKE ALL ON DATABASE rating_service_db FROM PUBLIC;
+
+        GRANT CONNECT ON DATABASE user_service_db TO user_svc_user;
+        GRANT CONNECT ON DATABASE dog_service_db TO dog_svc_user;
+        GRANT CONNECT ON DATABASE rating_service_db TO rating_svc_user;
+    EOSQL
+  02-user-service-schema.sql: |
+    \connect user_service_db
+    
+    GRANT USAGE ON SCHEMA public TO user_svc_user;
+    
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO user_svc_user;
+    
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT USAGE, SELECT ON SEQUENCES TO user_svc_user;
+    
+    CREATE TABLE users (
+      id            UUID PRIMARY KEY,
+      username      VARCHAR(255) NOT NULL UNIQUE,
+      password_hash VARCHAR(60) NOT NULL,
+      email         VARCHAR(255) NOT NULL UNIQUE,
+      first_name    VARCHAR(30)  NOT NULL,
+      last_name     VARCHAR(30)  NOT NULL,
+      phone_number  VARCHAR(12),
+      active        BOOLEAN      NOT NULL DEFAULT true,
+      created_at    TIMESTAMPTZ  NOT NULL,
+      updated_at    TIMESTAMPTZ  NOT NULL
+    );
+    
+    CREATE INDEX username_id ON users (username);
+    CREATE INDEX email_id    ON users (email);
+    
+    CREATE TABLE user_roles (
+      user_id UUID        NOT NULL REFERENCES users(id),
+      role    VARCHAR(255) CHECK (role IN ('ADMIN', 'JUDGE', 'USER'))
+    );
+    
+    CREATE TABLE refresh_tokens (
+      id         UUID         PRIMARY KEY,
+      token      VARCHAR(2048) NOT NULL UNIQUE,
+      user_id    UUID          NOT NULL REFERENCES users(id),
+      expires_at TIMESTAMPTZ   NOT NULL,
+      revoked    BOOLEAN       NOT NULL DEFAULT false,
+      family     VARCHAR(36)
+    );
+    
+    ALTER TABLE users          OWNER TO postgres;
+    ALTER TABLE user_roles     OWNER TO postgres;
+    ALTER TABLE refresh_tokens OWNER TO postgres;
+    
+    GRANT SELECT, INSERT, UPDATE, DELETE ON users          TO user_svc_user;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON user_roles     TO user_svc_user;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON refresh_tokens TO user_svc_user;
+    
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id          BIGSERIAL       PRIMARY KEY,
+      tbl_name    VARCHAR(100)    NOT NULL,
+      operation   VARCHAR(10)     NOT NULL,
+      changed_at  TIMESTAMPTZ     NOT NULL DEFAULT now(),
+      old_row     JSONB,
+      new_row     JSONB
+    );
+    
+    ALTER TABLE audit_log      OWNER TO postgres;
+    
+    REVOKE ALL ON audit_log FROM user_svc_user;
+    
+    CREATE OR REPLACE FUNCTION audit_trigger_fn()
+    RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+    BEGIN
+      IF TG_OP = 'DELETE' THEN
+        INSERT INTO audit_log(tbl_name, operation, old_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(OLD)::jsonb);
+      ELSIF TG_OP = 'INSERT' THEN
+        INSERT INTO audit_log(tbl_name, operation, new_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(NEW)::jsonb);
+      ELSE
+        INSERT INTO audit_log(tbl_name, operation, old_row, new_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(OLD)::jsonb, row_to_json(NEW)::jsonb);
+      END IF;
+      RETURN NULL;
+    END;
+    $$;
+    
+    CREATE TRIGGER audit_users
+    AFTER INSERT OR UPDATE OR DELETE ON users
+    FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
+    
+    CREATE TRIGGER audit_user_roles
+    AFTER INSERT OR UPDATE OR DELETE ON user_roles
+    FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
+    
+    CREATE TRIGGER audit_refresh_tokens
+    AFTER INSERT OR UPDATE OR DELETE ON refresh_tokens
+    FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
+
+  03-dog-service-schema.sql: |
+    \connect dog_service_db
+    
+    GRANT USAGE ON SCHEMA public TO dog_svc_user;
+    
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO dog_svc_user;
+    
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT USAGE, SELECT ON SEQUENCES TO dog_svc_user;
+    
+    CREATE TABLE dogs (
+      id          UUID          PRIMARY KEY,
+      owner_id    UUID          NOT NULL,
+      nickname    VARCHAR(255)  NOT NULL,
+      breed       VARCHAR(255)  NOT NULL,
+      age         INTEGER       NOT NULL,
+      image       VARCHAR(255),
+      description VARCHAR(1000) NOT NULL,
+      created_at  TIMESTAMPTZ   NOT NULL,
+      updated_at  TIMESTAMPTZ   NOT NULL
+    );
+    
+    ALTER TABLE dogs OWNER TO postgres;
+    
+    GRANT SELECT, INSERT, UPDATE, DELETE ON dogs TO dog_svc_user;
+    
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id          BIGSERIAL       PRIMARY KEY,
+      tbl_name    VARCHAR(100)    NOT NULL,
+      operation   VARCHAR(10)     NOT NULL,
+      changed_at  TIMESTAMPTZ     NOT NULL DEFAULT now(),
+      old_row     JSONB,
+      new_row     JSONB
+    );
+    
+    ALTER TABLE audit_log      OWNER TO postgres;
+    
+    REVOKE ALL ON audit_log FROM dog_svc_user;
+    
+    CREATE OR REPLACE FUNCTION audit_trigger_fn()
+    RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+    BEGIN
+      IF TG_OP = 'DELETE' THEN
+        INSERT INTO audit_log(tbl_name, operation, old_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(OLD)::jsonb);
+      ELSIF TG_OP = 'INSERT' THEN
+        INSERT INTO audit_log(tbl_name, operation, new_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(NEW)::jsonb);
+      ELSE
+        INSERT INTO audit_log(tbl_name, operation, old_row, new_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(OLD)::jsonb, row_to_json(NEW)::jsonb);
+      END IF;
+      RETURN NULL;
+    END;
+    $$;
+    
+    CREATE TRIGGER audit_dogs
+    AFTER INSERT OR UPDATE OR DELETE ON dogs
+    FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
+  04-rating-service-schema.sql: |
+    \connect rating_service_db
+    
+    GRANT USAGE ON SCHEMA public TO rating_svc_user;
+    
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO rating_svc_user;
+    
+    ALTER DEFAULT PRIVILEGES IN SCHEMA public
+    GRANT USAGE, SELECT ON SEQUENCES TO rating_svc_user;
+    
+    CREATE TABLE ratings (
+      id         UUID        PRIMARY KEY,
+      judge_id   UUID        NOT NULL,
+      dog_id     UUID        NOT NULL,
+      rating     INTEGER     NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL,
+      CONSTRAINT uq_dog_judge UNIQUE (dog_id, judge_id)
+    );
+    
+    CREATE TABLE rating_summaries (
+      dog_id     UUID        PRIMARY KEY,
+      average    FLOAT       NOT NULL,
+      count      INTEGER     NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL
+    );
+    
+    ALTER TABLE ratings OWNER TO postgres;
+    ALTER TABLE rating_summaries OWNER TO postgres;
+    
+    GRANT SELECT, INSERT, UPDATE, DELETE ON ratings TO rating_svc_user;
+    GRANT SELECT, INSERT, UPDATE, DELETE ON rating_summaries TO rating_svc_user;
+    
+    CREATE TABLE IF NOT EXISTS audit_log (
+      id          BIGSERIAL       PRIMARY KEY,
+      tbl_name    VARCHAR(100)    NOT NULL,
+      operation   VARCHAR(10)     NOT NULL,
+      changed_at  TIMESTAMPTZ     NOT NULL DEFAULT now(),
+      old_row     JSONB,
+      new_row     JSONB
+    );
+    
+    ALTER TABLE audit_log      OWNER TO postgres;
+    
+    REVOKE ALL ON audit_log FROM rating_svc_user;
+    
+    CREATE OR REPLACE FUNCTION audit_trigger_fn()
+    RETURNS TRIGGER LANGUAGE plpgsql SECURITY DEFINER AS $$
+    BEGIN
+      IF TG_OP = 'DELETE' THEN
+        INSERT INTO audit_log(tbl_name, operation, old_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(OLD)::jsonb);
+      ELSIF TG_OP = 'INSERT' THEN
+        INSERT INTO audit_log(tbl_name, operation, new_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(NEW)::jsonb);
+      ELSE
+        INSERT INTO audit_log(tbl_name, operation, old_row, new_row)
+        VALUES (TG_TABLE_NAME, TG_OP, row_to_json(OLD)::jsonb, row_to_json(NEW)::jsonb);
+      END IF;
+      RETURN NULL;
+    END;
+    $$;
+    
+    CREATE TRIGGER audit_ratings
+    AFTER INSERT OR UPDATE OR DELETE ON ratings
+    FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();
+    
+    CREATE TRIGGER audit_rating_summaries
+    AFTER INSERT OR UPDATE OR DELETE ON rating_summaries
+    FOR EACH ROW EXECUTE FUNCTION audit_trigger_fn();

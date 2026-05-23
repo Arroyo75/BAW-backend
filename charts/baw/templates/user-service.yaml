@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.userService.replicas }}
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+        - name: user-service
+          image: {{ .Values.userService.image }}:{{ .Values.userService.tag }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: {{ .Values.userService.port }}
+          env:
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres:5432/user_service_db"
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "user_svc_user"
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgresql-secret
+                  key: USER_SVC_DB_PASSWORD
+            - name: SPRING_DATA_REDIS_HOST
+              value: "redis"
+            - name: SPRING_DATA_REDIS_PORT
+              value: "6379"
+            - name: JWT_PRIVATE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secret
+                  key: JWT_PRIVATE_KEY
+            - name: JWT_PUBLIC_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: user-service-secret
+                  key: JWT_PUBLIC_KEY
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.userService.port }}
+            initialDelaySeconds: {{ .Values.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.failureThreshold }}
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.userService.port }}
+            initialDelaySeconds: {{ .Values.probes.initialDelaySeconds }}
+            periodSeconds: {{ .Values.probes.periodSeconds }}
+            timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
+            failureThreshold: {{ .Values.probes.failureThreshold }}
+          securityContext:
+            allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
+            runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+            runAsUser: {{ .Values.securityContext.runAsUser }}
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: {{ .Values.securityContext.readOnlyRootFilesystem }}
+          volumeMounts:
+            - mountPath: /tmp
+              name: tmp-volume
+      volumes:
+        - name: tmp-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: user-service
+  ports:
+    - port: {{ .Values.userService.port }}
+      targetPort: {{ .Values.userService.port }}
