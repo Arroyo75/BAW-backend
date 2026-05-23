@@ -10,25 +10,25 @@ redis:
   storage: 512Mi
 
 userService:
-  image: ghcr.io/Arroyo75/baw-user-service
+  image: ghcr.io/arroyo75/baw-user-service
   tag: sha-ca33703
   port: 8081
   replicas: 1
 
 dogService:
-  image: ghcr.io/Arroyo75/baw-dog-service
+  image: ghcr.io/arroyo75/baw-dog-service
   tag: sha-ca33703
   port: 8082
   replicas: 1
 
 ratingService:
-  image: ghcr.io/Arroyo75/baw-rating-service
+  image: ghcr.io/arroyo75/baw-rating-service
   tag: sha-ca33703
   port: 8083
   replicas: 1
 
 apiGateway:
-  image: ghcr.io/Arroyo75/baw-api-gateway
+  image: ghcr.io/arroyo75/baw-api-gateway
   tag: sha-9aab196
   port: 8080
   replicas: 1
