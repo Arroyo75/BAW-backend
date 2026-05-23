@@ -22,7 +22,7 @@ dogService:
   replicas: 1
 
 ratingService:
-  image: docker.io/library/baw-rating-service
+  image: ghcr.io/Arroyo75/baw-rating-service
   tag: latest
   port: 8083
   replicas: 1
