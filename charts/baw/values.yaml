@@ -28,8 +28,8 @@ ratingService:
   replicas: 1
 
 apiGateway:
-  image: docker.io/library/baw-api-gateway
-  tag: latest
+  image: ghcr.io/Arroyo75/baw-api-gateway
+  tag: sha-ca33703
   port: 8080
   replicas: 1
 
