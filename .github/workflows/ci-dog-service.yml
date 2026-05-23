@@ -188,10 +188,6 @@ jobs:
           sed -i "/dogService:/,/image:/ s|image:.*|image: ghcr.io/${{ github.repository_owner }}\/baw-dog-service|" charts/baw/values.yaml
           cat charts/baw/values.yaml
 
-      - name: Update image in values.yaml
-        run: |
-          sed -i '/dogService:/,/image:/ s|image:.*|image: ghcr.io/${{ github.repository_owner }}/baw-dog-service|' charts/baw/values.yaml
-
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
