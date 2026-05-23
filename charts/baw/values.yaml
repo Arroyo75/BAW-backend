@@ -10,7 +10,7 @@ redis:
   storage: 512Mi
 
 userService:
-  image: docker.io/library/baw-user-service
+  image: ghcr.io/Arroyo75/baw-user-service
   tag: latest
   port: 8081
   replicas: 1
