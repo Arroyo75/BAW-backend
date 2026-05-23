@@ -13,6 +13,8 @@ spec:
       labels:
         app: dog-service
     spec:
+      imagePullSecrets:
+        - name: { { .Values.imagePullSecret } }
       containers:
         - name: dog-service
           image: {{ .Values.dogService.image }}:{{ .Values.dogService.tag }}

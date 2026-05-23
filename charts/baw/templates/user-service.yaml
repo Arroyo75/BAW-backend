@@ -13,6 +13,8 @@ spec:
       labels:
         app: user-service
     spec:
+      imagePullSecrets:
+        - name: { { .Values.imagePullSecret } }
       containers:
         - name: user-service
           image: {{ .Values.userService.image }}:{{ .Values.userService.tag }}

@@ -13,6 +13,8 @@ spec:
       labels:
         app: api-gateway
     spec:
+      imagePullSecrets:
+        - name: { { .Values.imagePullSecret } }
       containers:
         - name: api-gateway
           image: {{ .Values.apiGateway.image }}:{{ .Values.apiGateway.tag }}
