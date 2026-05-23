@@ -6,3 +6,10 @@ description = "Test RSA keys for CI - not used in any real environment"
 paths = [
     '''user-service/src/test/resources/application-test.yml'''
 ]
+
+[allowlist]
+description = "Sealed Secrets are encrypted and safe to commit"
+paths = [
+    '''charts/baw/templates/sealed-secrets/.*\.yaml''',
+    '''k8s/sealed-secrets/.*\.yaml'''
+]
