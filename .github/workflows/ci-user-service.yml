@@ -182,9 +182,11 @@ jobs:
 
       - name: Update image tag in values.yaml
         run: |
-          TAG="sha-$(echo ${{ github.sha }} | cut -c1-7)"
-          sed -i '/userService:/,/tag:/ s|tag:.*|tag: '"$TAG"'|' charts/baw/values.yaml
-          sed -i '/userService:/,/image:/ s|image:.*|image: ghcr.io/${{ github.repository_owner }}/baw-user-service|' charts/baw/values.yaml\
+          TAG="sha-$(echo '${{ github.sha }}' | cut -c1-7)"
+          echo "TAG=$TAG"
+          sed -i "/userService:/,/tag:/ s|tag:.*|tag: $TAG|" charts/baw/values.yaml
+          sed -i "/userService:/,/image:/ s|image:.*|image: ghcr.io/${{ github.repository_owner }}\/baw-user-service|" charts/baw/values.yaml
+          cat charts/baw/values.yaml
 
       - name: Update image in values.yaml
         run: |
