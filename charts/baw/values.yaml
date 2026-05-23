@@ -16,7 +16,7 @@ userService:
   replicas: 1
 
 dogService:
-  image: docker.io/library/baw-dog-service
+  image: ghcr.io/Arroyo75/baw-dog-service
   tag: latest
   port: 8082
   replicas: 1
