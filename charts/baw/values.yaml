@@ -11,19 +11,19 @@ redis:
 
 userService:
   image: ghcr.io/Arroyo75/baw-user-service
-  tag: latest
+  tag: sha-fcbe82d
   port: 8081
   replicas: 1
 
 dogService:
   image: ghcr.io/Arroyo75/baw-dog-service
-  tag: latest
+  tag: sha-fcbe82d
   port: 8082
   replicas: 1
 
 ratingService:
   image: ghcr.io/Arroyo75/baw-rating-service
-  tag: latest
+  tag: sha-fcbe82d
   port: 8083
   replicas: 1
 
