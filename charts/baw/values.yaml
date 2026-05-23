@@ -11,7 +11,7 @@ redis:
 
 userService:
   image: ghcr.io/Arroyo75/baw-user-service
-  tag: latest
+  tag: sha-fcbe82d
   port: 8081
   replicas: 1
 
