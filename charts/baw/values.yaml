@@ -54,3 +54,5 @@ securityContext:
   runAsNonRoot: true
   allowPrivilegeEscalation: false
   readOnlyRootFilesystem: true
+
+imagePullSecret: ghcr-secret
