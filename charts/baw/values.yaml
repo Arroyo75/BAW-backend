@@ -23,7 +23,7 @@ dogService:
 
 ratingService:
   image: ghcr.io/Arroyo75/baw-rating-service
-  tag: latest
+  tag: sha-fcbe82d
   port: 8083
   replicas: 1
 
