@@ -33,6 +33,8 @@ spec:
               value: "10.244.0.11"
             - name: SPRING_DATA_REDIS_PORT
               value: "6379"
+            - name: JAVA_OPTS
+              value: "-Djava.net.preferIPv4Stack=true -Dio.netty.noNativeTransport=true"
           livenessProbe:
             httpGet:
               path: /actuator/health
