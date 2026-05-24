@@ -5,10 +5,16 @@ metadata:
   namespace: baw
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - baw.local
+      secretName: baw-tls-secret
   rules:
-    - http:
+    - host: baw.local
+      http:
         paths:
           - path: /
             pathType: Prefix

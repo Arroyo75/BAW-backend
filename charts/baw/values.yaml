@@ -76,7 +76,7 @@ frontend:
 
 ingress:
   className: nginx
-  host: ""
+  host: baw.local
 
 probes:
   initialDelaySeconds: 60
