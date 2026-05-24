@@ -49,8 +49,8 @@ ratingService:
       cpu: "500m"
 
 apiGateway:
-  image: ghcr.io/arroyo75/baw-api-gateway
-  tag: sha-9aab196
+  image: ghcr.io/Arroyo75/baw-api-gateway
+  tag: sha-bf5a075
   port: 8080
   replicas: 1
   resources:
