@@ -183,9 +183,11 @@ jobs:
       - name: Update image tag in values.yaml
         run: |
           TAG="sha-$(echo '${{ github.sha }}' | cut -c1-7)"
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           echo "TAG=$TAG"
+          echo "OWNER=$OWNER"
           sed -i "/ratingService:/,/tag:/ s|tag:.*|tag: $TAG|" charts/baw/values.yaml
-          sed -i "/ratingService:/,/image:/ s|image:.*|image: ghcr.io/${{ github.repository_owner }}\/baw-rating-service|" charts/baw/values.yaml
+          sed -i "/ratingService:/,/image:/ s|image:.*|image: ghcr.io\/$OWNER\/baw-rating-service|" charts/baw/values.yaml
           cat charts/baw/values.yaml
 
       - name: Commit and push
