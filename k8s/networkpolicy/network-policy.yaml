@@ -17,6 +17,14 @@ spec:
     - to:
         - ipBlock:
             cidr: 172.18.0.0/16
+    - to:
+        - ipBlock:
+            cidr: 10.96.0.0/16
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
     - ports:
         - port: 53
           protocol: UDP
@@ -81,7 +89,39 @@ spec:
             matchLabels:
               app: frontend
   egress:
-    - {}
+    - to:
+        - podSelector:
+            matchLabels:
+              app: user-service
+      ports:
+        - port: {{ .Values.userService.port }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app: dog-service
+      ports:
+        - port: {{ .Values.dogService.port }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app: rating-service
+      ports:
+        - port: {{ .Values.ratingService.port }}
+    - to:
+        - podSelector:
+            matchLabels:
+              app: redis
+      ports:
+        - port: 6379
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
 ---
 # user-service przyjmuje od api-gateway i innych mikroserwisów (JWKS)
 apiVersion: networking.k8s.io/v1
