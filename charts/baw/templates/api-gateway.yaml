@@ -30,7 +30,7 @@ spec:
               cpu: {{ .Values.apiGateway.resources.limits.cpu | quote }}
           env:
             - name: SPRING_DATA_REDIS_HOST
-              value: "redis"
+              value: "redis.baw.svc.cluster.local"
             - name: SPRING_DATA_REDIS_PORT
               value: "6379"
           livenessProbe:
