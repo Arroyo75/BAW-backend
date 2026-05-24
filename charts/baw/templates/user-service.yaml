@@ -21,6 +21,13 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.userService.port }}
+          resources:
+            requests:
+              memory: {{ .Values.userService.resources.requests.memory | quote }}
+              cpu: {{  .Values.userService.resources.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.userService.resources.limits.memory | quote }}
+              cpu: {{ .Values.userService.resources.limits.cpu | quote }}
           env:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres:5432/user_service_db"
@@ -61,6 +68,12 @@ spec:
             periodSeconds: {{ .Values.probes.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
             failureThreshold: {{ .Values.probes.failureThreshold }}
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.userService.port }}
+            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
           securityContext:
             allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
             runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}

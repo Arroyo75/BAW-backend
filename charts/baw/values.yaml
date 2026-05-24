@@ -14,30 +14,65 @@ userService:
   tag: sha-ca33703
   port: 8081
   replicas: 1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
 
 dogService:
   image: ghcr.io/arroyo75/baw-dog-service
   tag: sha-ca33703
   port: 8082
   replicas: 1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
 
 ratingService:
   image: ghcr.io/arroyo75/baw-rating-service
   tag: sha-ca33703
   port: 8083
   replicas: 1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
 
 apiGateway:
   image: ghcr.io/arroyo75/baw-api-gateway
   tag: sha-9aab196
   port: 8080
   replicas: 1
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
 
 frontend:
   image: docker.io/library/baw-frontend
   tag: latest
   port: 80
   replicas: 1
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
 
 ingress:
   className: nginx
@@ -48,6 +83,9 @@ probes:
   periodSeconds: 30
   timeoutSeconds: 10
   failureThreshold: 5
+  startup:
+    failureThreshold: 30
+    periodSeconds: 10
 
 securityContext:
   runAsUser: 1001

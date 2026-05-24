@@ -21,6 +21,13 @@ spec:
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: {{ .Values.ratingService.port }}
+          resources:
+            requests:
+              memory: {{ .Values.ratingService.resources.requests.memory | quote }}
+              cpu: {{ .Values.ratingService.resources.requests.cpu | quote }}
+            limits:
+              memory: {{ .Values.ratingService.resources.limits.memory | quote }}
+              cpu: {{ .Values.ratingService.resources.limits.cpu | quote }}
           env:
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres:5432/rating_service_db"
@@ -51,6 +58,12 @@ spec:
             periodSeconds: {{ .Values.probes.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
             failureThreshold: {{ .Values.probes.failureThreshold }}
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: {{ .Values.ratingService.port }}
+            failureThreshold: {{ .Values.probes.startup.failureThreshold }}
+            periodSeconds: {{ .Values.probes.startup.periodSeconds }}
           securityContext:
             allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
             runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
