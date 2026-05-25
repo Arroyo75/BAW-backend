@@ -24,7 +24,7 @@ userService:
 
 dogService:
   image: ghcr.io/arroyo75/baw-dog-service
-  tag: sha-a4121c6
+  tag: sha-9f82904
   port: 8082
   replicas: 1
   resources:
