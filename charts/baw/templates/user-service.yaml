@@ -94,6 +94,8 @@ kind: Service
 metadata:
   name: user-service
   namespace: {{ .Values.namespace }}
+  labels:
+    monitored: "true"
 spec:
   selector:
     app: user-service

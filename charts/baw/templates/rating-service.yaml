@@ -84,6 +84,8 @@ kind: Service
 metadata:
   name: rating-service
   namespace: {{ .Values.namespace }}
+  labels:
+    monitored: "true"
 spec:
   selector:
     app: rating-service

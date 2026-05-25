@@ -89,6 +89,8 @@ kind: Service
 metadata:
   name: dog-service
   namespace: {{ .Values.namespace }}
+  labels:
+    monitored: "true"
 spec:
   selector:
     app: dog-service

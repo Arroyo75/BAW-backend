@@ -77,6 +77,8 @@ kind: Service
 metadata:
   name: api-gateway
   namespace: {{ .Values.namespace }}
+  labels:
+    monitored: "true"
 spec:
   selector:
     app: api-gateway
