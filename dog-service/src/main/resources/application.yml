@@ -37,10 +37,14 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
+        include: health,prometheus
   endpoint:
     health:
       show-details: never
+    gateway:
+      enabled: true
+    prometheus:
+      enabled: true
 
 logging:
   level:
