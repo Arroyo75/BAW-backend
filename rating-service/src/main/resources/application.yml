@@ -43,6 +43,9 @@ management:
       enabled: true
     prometheus:
       enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
 
 logging:
   level:
