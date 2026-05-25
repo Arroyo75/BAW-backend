@@ -90,5 +90,6 @@ spec:
   selector:
     app: rating-service
   ports:
-    - port: {{ .Values.ratingService.port }}
+    - name: http
+      port: {{ .Values.ratingService.port }}
       targetPort: {{ .Values.ratingService.port }}
