@@ -94,3 +94,9 @@ securityContext:
   readOnlyRootFilesystem: true
 
 imagePullSecret: ghcr-secret
+
+hpa:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 70
