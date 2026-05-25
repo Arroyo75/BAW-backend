@@ -37,7 +37,7 @@ dogService:
 
 ratingService:
   image: ghcr.io/arroyo75/baw-rating-service
-  tag: sha-9f82904
+  tag: sha-eb91dd8
   port: 8083
   replicas: 1
   resources:
