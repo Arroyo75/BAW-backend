@@ -88,6 +88,10 @@ spec:
         - podSelector:
             matchLabels:
               app: frontend
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
   egress:
     - to:
         - podSelector:
@@ -149,6 +153,10 @@ spec:
         - podSelector:
             matchLabels:
               app: rating-service
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
   egress:
     - to:
         - podSelector:
@@ -190,6 +198,10 @@ spec:
         - podSelector:
             matchLabels:
               app: api-gateway
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
   egress:
     - to:
         - podSelector:
@@ -237,6 +249,10 @@ spec:
         - podSelector:
             matchLabels:
               app: api-gateway
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: monitoring
   egress:
     - to:
         - podSelector:
