@@ -1,7 +1,7 @@
 -- Schema already created by Hibernate on startup
 -- Grant table/sequence permissions to app user
 
-\connect dog_service_db
+\connect dog_service_db postgres
 
 GRANT USAGE ON SCHEMA public TO dog_svc_user;
 

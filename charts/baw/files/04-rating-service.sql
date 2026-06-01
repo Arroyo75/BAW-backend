@@ -1,7 +1,7 @@
 -- Schema already created by Hibernate on startup
 -- Grant table/sequence permissions to app user
 
-\connect rating_service_db
+\connect rating_service_db postgres;
 
 GRANT USAGE ON SCHEMA public TO rating_svc_user;
 
