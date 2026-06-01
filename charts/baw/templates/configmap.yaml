@@ -31,3 +31,5 @@ data:
 {{ .Files.Get "files/03-dog-service.sql" | indent 4 }}
   04-rating-service-schema.sql: |
 {{ .Files.Get "files/04-rating-service.sql" | indent 4 }}
+  05-seed.sql: |
+{{ .Files.Get "files/05-seed.sql" | indent 4 }}
