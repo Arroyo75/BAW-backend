@@ -16,11 +16,11 @@ spec:
   egress:
     - to:
         - ipBlock:
-            cidr: 172.18.0.0/16
+            cidr: 172.18.0.0/16 #węzły klastra (health checks)
     - to:
         - ipBlock:
-            cidr: 10.96.0.0/16
-      ports:
+            cidr: 10.96.0.0/16 #Service (health checks)
+      ports: #namespace kube-system CoreDNS
         - port: 53
           protocol: UDP
         - port: 53

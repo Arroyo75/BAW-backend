@@ -127,3 +127,6 @@ k8s/sealed-secrets-public-cert.pem
 k8s/deployments/postgres-init-configmap.yaml
 
 charts/baw/old.yaml
+
+argocd-pass-decoded.txt
+argocd-pass.txt

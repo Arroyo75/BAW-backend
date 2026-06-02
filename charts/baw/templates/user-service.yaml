@@ -22,10 +22,10 @@ spec:
           ports:
             - containerPort: {{ .Values.userService.port }}
           resources:
-            requests:
+            requests: #minimalna ilość
               memory: {{ .Values.userService.resources.requests.memory | quote }}
               cpu: {{  .Values.userService.resources.requests.cpu | quote }}
-            limits:
+            limits: #twarde maksimum
               memory: {{ .Values.userService.resources.limits.memory | quote }}
               cpu: {{ .Values.userService.resources.limits.cpu | quote }}
           env:
@@ -52,7 +52,7 @@ spec:
                 secretKeyRef:
                   name: user-service-secret
                   key: JWT_PUBLIC_KEY
-          livenessProbe:
+          livenessProbe: #czy nadal żyje
             httpGet:
               path: /actuator/health
               port: {{ .Values.userService.port }}
@@ -60,7 +60,7 @@ spec:
             periodSeconds: {{ .Values.probes.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
             failureThreshold: {{ .Values.probes.failureThreshold }}
-          readinessProbe:
+          readinessProbe: #czy jest gotowa obsługiwać ruch
             httpGet:
               path: /actuator/health
               port: {{ .Values.userService.port }}
@@ -68,7 +68,7 @@ spec:
             periodSeconds: {{ .Values.probes.periodSeconds }}
             timeoutSeconds: {{ .Values.probes.timeoutSeconds }}
             failureThreshold: {{ .Values.probes.failureThreshold }}
-          startupProbe:
+          startupProbe: #czy się uruchomiła
             httpGet:
               path: /actuator/health
               port: {{ .Values.userService.port }}
@@ -100,6 +100,6 @@ spec:
   selector:
     app: user-service
   ports:
-    - name: http
+    - name: http #dla prometeusza
       port: {{ .Values.userService.port }}
       targetPort: {{ .Values.userService.port }}
