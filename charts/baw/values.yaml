@@ -11,7 +11,7 @@ redis:
 
 userService:
   image: ghcr.io/arroyo75/baw-user-service
-  tag: sha-e7cdebb
+  tag: sha-783f350
   port: 8081
   replicas: 1
   resources:
@@ -24,7 +24,7 @@ userService:
 
 dogService:
   image: ghcr.io/arroyo75/baw-dog-service
-  tag: sha-e7cdebb
+  tag: sha-783f350
   port: 8082
   replicas: 1
   resources:
@@ -37,7 +37,7 @@ dogService:
 
 ratingService:
   image: ghcr.io/arroyo75/baw-rating-service
-  tag: sha-e7cdebb
+  tag: sha-783f350
   port: 8083
   replicas: 1
   resources:
@@ -50,7 +50,7 @@ ratingService:
 
 apiGateway:
   image: ghcr.io/arroyo75/baw-api-gateway
-  tag: sha-e7cdebb
+  tag: sha-783f350
   port: 8080
   replicas: 1
   resources:
