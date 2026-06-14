@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/Arroyo75/BAW-backend/compare/v1.0.1...v1.1.0) (2026-06-14)
+
+
+### Features
+
+* test semantic release version propagation ([783f350](https://github.com/Arroyo75/BAW-backend/commit/783f3503f6914b702ecd6f145bf89632bc2f5640))
+
 ## [1.0.1](https://github.com/Arroyo75/BAW-backend/compare/v1.0.0...v1.0.1) (2026-06-14)
 
 
