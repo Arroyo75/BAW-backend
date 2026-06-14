@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/Arroyo75/BAW-backend/compare/v1.2.0...v1.3.0) (2026-06-14)
+
+
+### Features
+
+* replace Sealed Secrets with HashiCorp Vault and External Secrets Operator ([52094ab](https://github.com/Arroyo75/BAW-backend/commit/52094abfe19f890f065871aa5dc12bf36fa0482d))
+
 # [1.2.0](https://github.com/Arroyo75/BAW-backend/compare/v1.1.0...v1.2.0) (2026-06-14)
 
 
