@@ -203,7 +203,18 @@ jobs:
         id: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: semantic-release
+        run: |
+          OUTPUT=$(semantic-release 2>&1)
+          echo "$OUTPUT"
+          VERSION=$(echo "$OUTPUT" | grep -oP 'Published release \K[0-9]+\.[0-9]+\.[0-9]+' | tail -1)
+          if [ -n "$VERSION" ]; then
+            echo "new_release_published=true" >> $GITHUB_OUTPUT
+            echo "new_release_version=$VERSION" >> $GITHUB_OUTPUT
+            echo "Detected version: $VERSION"
+          else
+            echo "new_release_published=false" >> $GITHUB_OUTPUT
+            echo "No new release"
+          fi
 
   push-image:
     name: Push to ghcr.io - ${{ matrix.service }}
