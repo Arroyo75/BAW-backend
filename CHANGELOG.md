@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/Arroyo75/BAW-backend/compare/v1.3.0...v1.3.1) (2026-06-14)
+
+
+### Bug Fixes
+
+* update ExternalSecret apiVersion to v1 ([1e9ace2](https://github.com/Arroyo75/BAW-backend/commit/1e9ace2055ceb8e929cb3e640a4848aec6bffd83))
+
 # [1.3.0](https://github.com/Arroyo75/BAW-backend/compare/v1.2.0...v1.3.0) (2026-06-14)
 
 
