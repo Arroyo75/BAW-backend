@@ -216,46 +216,34 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   update-helm:
-    name: Update Helm values - ${{ matrix.service }}
+    name: Update Helm values
     runs-on: ubuntu-latest
     needs: push-image
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     permissions:
       contents: write
-    strategy:
-      matrix:
-        include:
-          - service: user-service
-            helm-key: userService
-          - service: dog-service
-            helm-key: dogService
-          - service: rating-service
-            helm-key: ratingService
-          - service: api-gateway
-            helm-key: apiGateway
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Update image tag in values.yaml
+      - name: Update image tags in values.yaml
         run: |
           TAG="sha-$(echo '${{ github.sha }}' | cut -c1-7)"
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo "TAG=$TAG"
-          echo "OWNER=$OWNER"
-          sed -i "/${{ matrix.helm-key }}:/,/tag:/ s|tag:.*|tag: $TAG|" charts/baw/values.yaml
-          sed -i "/${{ matrix.helm-key }}:/,/image:/ s|image:.*|image: ghcr.io\/$OWNER\/baw-${{ matrix.service }}|" charts/baw/values.yaml
+          echo "TAG=$TAG OWNER=$OWNER"
+          sed -i "/userService:/,/tag:/ s|tag:.*|tag: $TAG|" charts/baw/values.yaml
+          sed -i "/dogService:/,/tag:/ s|tag:.*|tag: $TAG|" charts/baw/values.yaml
+          sed -i "/ratingService:/,/tag:/ s|tag:.*|tag: $TAG|" charts/baw/values.yaml
+          sed -i "/apiGateway:/,/tag:/ s|tag:.*|tag: $TAG|" charts/baw/values.yaml
           cat charts/baw/values.yaml
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git stash || true
           git pull --rebase origin main
-          git stash pop || true
           git add charts/baw/values.yaml
-          git diff --staged --quiet || git commit -m "ci: update ${{ matrix.service }} image to $TAG"
+          git diff --staged --quiet || git commit -m "ci: update all services to $TAG"
           git push
