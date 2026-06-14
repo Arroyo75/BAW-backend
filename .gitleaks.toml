@@ -7,7 +7,7 @@ paths = [
     '''user-service/src/test/resources/application-test.yml'''
 ]
 
-[allowlist]
+[[allowlists]]
 description = "Sealed Secrets are encrypted and safe to commit"
 paths = [
     '''charts/baw/templates/sealed-secrets/.*\.yaml''',
