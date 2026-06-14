@@ -14,7 +14,7 @@ public class CookieUtils {
         ResponseCookie cookie = ResponseCookie.from("refreshToken", token)
                 .httpOnly(true)
                 .secure(false)
-                .sameSite("Lax")
+                .sameSite("Lax") //Lax
                 .path("/api/auth")
                 .maxAge(Duration.ofDays(7))
                 .build();
